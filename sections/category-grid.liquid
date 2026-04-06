@@ -1,0 +1,198 @@
+{% comment %}
+  Category Grid Section – visar alla produktkategorier
+{% endcomment %}
+
+<section class="category-grid section-{{ section.id }}-padding">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="category-grid__header">
+        <h2 class="category-grid__heading">{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p class="category-grid__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <ul class="category-grid__list" role="list">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'category' -%}
+          <li class="category-grid__item" {{ block.shopify_attributes }}>
+            <a href="{{ block.settings.link }}" class="category-card" aria-label="{{ block.settings.title }}">
+              <div class="category-card__media">
+                {%- if block.settings.image != blank -%}
+                  <img
+                    srcset="{{ block.settings.image | image_url: width: 360 }} 360w,
+                            {{ block.settings.image | image_url: width: 540 }} 540w,
+                            {{ block.settings.image | image_url: width: 720 }} 720w"
+                    src="{{ block.settings.image | image_url: width: 540 }}"
+                    sizes="(min-width: 1200px) calc(1200px / 3), (min-width: 768px) 50vw, 100vw"
+                    alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                    loading="lazy"
+                    width="540"
+                    height="405"
+                    class="category-card__img">
+                {%- else -%}
+                  <div class="category-card__placeholder">
+                    {{ block.settings.icon_svg }}
+                  </div>
+                {%- endif -%}
+                <div class="category-card__overlay">
+                  <span class="category-card__cta">Utforska →</span>
+                </div>
+              </div>
+              <div class="category-card__content">
+                <span class="category-card__icon" aria-hidden="true">{{ block.settings.emoji }}</span>
+                <h3 class="category-card__title">{{ block.settings.title }}</h3>
+                {%- if block.settings.description != blank -%}
+                  <p class="category-card__description">{{ block.settings.description }}</p>
+                {%- endif -%}
+                {%- if block.settings.product_count != blank -%}
+                  <span class="category-card__count">{{ block.settings.product_count }} produkter</span>
+                {%- endif -%}
+              </div>
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+
+    {%- if section.settings.show_all_link -%}
+      <div class="category-grid__footer">
+        <a href="{{ routes.collections_url }}" class="btn btn--outline">
+          Visa alla kategorier
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kategorigrid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Shoppa efter rum"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Hitta rätt förvaringslösning för varje rum i ditt hem"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_all_link",
+      "label": "Visa 'Alla kategorier'-länk",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Kategori",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Kategoribild"
+        },
+        {
+          "type": "text",
+          "id": "emoji",
+          "label": "Emoji/ikon",
+          "default": "🏠"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Kategorinamn",
+          "default": "Köksförvaring"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Kort beskrivning",
+          "default": "Skåporganisatörer, kryddhyllor & mer"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Länk till kollektion"
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Antal produkter",
+          "default": "120+"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kategorigrid",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "🍳",
+            "title": "Köksförvaring",
+            "description": "Skåporganisatörer, kryddhyllor & diskställ",
+            "product_count": "120+"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "🛏️",
+            "title": "Sovrumsförvaring",
+            "description": "Garderobsorganisatörer & lådinsatser",
+            "product_count": "95+"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "🚿",
+            "title": "Badrumsförvaring",
+            "description": "Duschhyllor & sminkorganisatörer",
+            "product_count": "80+"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "🌿",
+            "title": "Trädgårdsförvaring",
+            "description": "Redskapsförråd & utomhusboxar",
+            "product_count": "60+"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "👟",
+            "title": "Hallförvaring",
+            "description": "Skoställ, krokpaneler & entréhyllor",
+            "product_count": "75+"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "emoji": "💼",
+            "title": "Kontorsförvaring",
+            "description": "Skrivbordsorganisatörer & hyllsystem",
+            "product_count": "85+"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

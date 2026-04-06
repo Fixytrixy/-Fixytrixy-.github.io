@@ -1,0 +1,217 @@
+{% comment %}
+  Collection Template – Fixaotrixa
+  Kategori/kollektionssida med filtrering och produktgrid
+{% endcomment %}
+
+<!-- Schema.org BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Hem",
+      "item": {{ request.origin | json }}
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ collection.title | json }},
+      "item": {{ request.origin | append: collection.url | json }}
+    }
+  ]
+}
+</script>
+
+<div class="collection-page">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs" aria-label="Brödsmulor">
+    <ol class="breadcrumbs__list">
+      <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link">Hem</a></li>
+      <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">{{ collection.title }}</li>
+    </ol>
+  </nav>
+
+  <!-- Collection Header -->
+  <div class="collection-page__header">
+    {%- if collection.image -%}
+      <div class="collection-page__hero">
+        <img
+          src="{{ collection.image | image_url: width: 1500 }}"
+          alt="{{ collection.image.alt | default: collection.title | escape }}"
+          loading="eager"
+          fetchpriority="high"
+          width="1500"
+          height="400"
+          class="collection-page__hero-img">
+        <div class="collection-page__hero-overlay">
+          <h1 class="collection-page__title">{{ collection.title }}</h1>
+        </div>
+      </div>
+    {%- else -%}
+      <h1 class="collection-page__title collection-page__title--no-image">{{ collection.title }}</h1>
+    {%- endif -%}
+
+    {%- if collection.description != blank -%}
+      <div class="collection-page__description rte">
+        {{ collection.description }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- Toolbar: sort + filter count -->
+  <div class="collection-page__toolbar">
+    <p class="collection-page__count" aria-live="polite">
+      {{ collection.products_count }} produkter
+    </p>
+
+    <div class="collection-page__sort">
+      <label for="SortBy" class="sr-only">Sortera efter</label>
+      <select
+        id="SortBy"
+        class="sort-select"
+        name="sort_by"
+        onchange="window.location.href = '{{ collection.url }}?sort_by=' + this.value">
+        <option value="manual"{% if collection.sort_by == 'manual' %} selected{% endif %}>Rekommenderade</option>
+        <option value="best-selling"{% if collection.sort_by == 'best-selling' %} selected{% endif %}>Bäst säljande</option>
+        <option value="title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>A–Ö</option>
+        <option value="title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>Ö–A</option>
+        <option value="price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Pris: lägst först</option>
+        <option value="price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Pris: högst först</option>
+        <option value="created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Nyaste</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="collection-page__grid">
+    {%- if collection.products.size > 0 -%}
+      <ul class="product-grid" role="list">
+        {%- for product in collection.products -%}
+          <li class="product-grid__item">
+            <article class="product-card" itemscope itemtype="https://schema.org/Product">
+              <a href="{{ product.url | within: collection }}" class="product-card__link" aria-label="{{ product.title }}">
+                <div class="product-card__media">
+                  {%- if product.featured_image -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 400 }}"
+                      srcset="{{ product.featured_image | image_url: width: 200 }} 200w,
+                              {{ product.featured_image | image_url: width: 400 }} 400w,
+                              {{ product.featured_image | image_url: width: 600 }} 600w"
+                      sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      loading="lazy"
+                      width="400"
+                      height="400"
+                      class="product-card__img"
+                      itemprop="image">
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+                  {%- endif -%}
+
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="product-card__badge product-card__badge--sale" aria-label="Rea">
+                      Rea
+                    </span>
+                  {%- endif -%}
+                </div>
+
+                <div class="product-card__info">
+                  {%- if product.vendor -%}
+                    <p class="product-card__vendor" itemprop="brand">{{ product.vendor }}</p>
+                  {%- endif -%}
+
+                  <h2 class="product-card__title" itemprop="name">{{ product.title }}</h2>
+
+                  {%- if product.metafields.reviews.rating -%}
+                    <div class="product-card__rating" aria-label="{{ product.metafields.reviews.rating.value.rating }} av 5">
+                      {% assign r = product.metafields.reviews.rating.value.rating | round %}
+                      {% for i in (1..5) %}
+                        <svg class="star{% if i > r %} star--empty{% endif %}" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                      {% endfor %}
+                      <span class="product-card__review-count">({{ product.metafields.reviews.rating_count }})</span>
+                    </div>
+                  {%- endif -%}
+
+                  <div class="product-card__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <meta itemprop="priceCurrency" content="{{ cart.currency.iso_code }}">
+                    {%- if product.compare_at_price > product.price -%}
+                      <s class="product-card__price-compare">{{ product.compare_at_price | money }}</s>
+                      <span class="product-card__price-current product-card__price--sale" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
+                        {{ product.price | money }}
+                      </span>
+                    {%- else -%}
+                      <span class="product-card__price-current" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
+                        {{ product.price | money }}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </a>
+
+              <div class="product-card__actions">
+                {%- form 'product', product, class: 'product-card__form' -%}
+                  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="btn btn--primary btn--full btn--small product-card__add"
+                    {%- unless product.available -%}disabled{%- endunless -%}
+                    aria-label="{% if product.available %}Lägg i varukorg – {{ product.title }}{% else %}Slutsåld{% endif %}">
+                    {%- if product.available -%}
+                      Lägg i varukorg
+                    {%- else -%}
+                      Slutsåld
+                    {%- endif -%}
+                  </button>
+                {%- endform -%}
+              </div>
+            </article>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <!-- Pagination -->
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="Sidor">
+          {%- if paginate.previous -%}
+            <a href="{{ paginate.previous.url }}" class="pagination__btn pagination__btn--prev" aria-label="Föregående sida">
+              ← Föregående
+            </a>
+          {%- endif -%}
+
+          <span class="pagination__current" aria-current="page">
+            Sida {{ paginate.current_page }} av {{ paginate.pages }}
+          </span>
+
+          {%- if paginate.next -%}
+            <a href="{{ paginate.next.url }}" class="pagination__btn pagination__btn--next" aria-label="Nästa sida">
+              Nästa →
+            </a>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+
+    {%- else -%}
+      <div class="collection-page__empty">
+        <p>Inga produkter hittades i den här kategorin ännu. Kolla tillbaka snart!</p>
+        <a href="/collections/all" class="btn btn--outline">Visa alla produkter</a>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- SEO long-form description (FAQ) at bottom -->
+  {%- assign faq_meta = collection.metafields.custom.faq_content -%}
+  {%- if faq_meta != blank -%}
+    <div class="collection-page__seo-content rte">
+      {{ faq_meta }}
+    </div>
+  {%- endif -%}
+</div>
+
+{%- paginate collection.products by 24 -%}{%- endpaginate -%}

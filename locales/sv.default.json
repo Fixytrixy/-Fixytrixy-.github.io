@@ -1,0 +1,67 @@
+{
+  "general": {
+    "password_page": {
+      "login_form_heading": "Ange butikslösenord",
+      "login_form_password_label": "Lösenord",
+      "login_form_password_placeholder": "Ditt lösenord",
+      "login_form_submit": "Gå in",
+      "signup_button_text": "E-postadress"
+    }
+  },
+  "accessibility": {
+    "skip_to_text": "Hoppa till innehåll",
+    "close": "Stäng",
+    "open": "Öppna",
+    "refresh_page": "Siduppdatering krävs",
+    "link_messages": {
+      "new_window": "Öppnas i nytt fönster"
+    }
+  },
+  "cart": {
+    "title": "Kundvagn",
+    "empty": "Din kundvagn är tom",
+    "total": "Totalt",
+    "checkout": "Gå till kassan",
+    "continue_shopping": "Fortsätt handla",
+    "shipping_notice": "Frakt och skatt beräknas i kassan",
+    "item_added": "Tillagd i kundvagnen",
+    "free_shipping": "Du är {{ amount }} från fri frakt!",
+    "free_shipping_reached": "🎉 Du har fri frakt!",
+    "remove": "Ta bort"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Lägg i varukorg",
+      "sold_out": "Slutsåld",
+      "unavailable": "Ej tillgänglig",
+      "on_sale": "Rea",
+      "quantity": {
+        "label": "Antal",
+        "increase": "Öka antal",
+        "decrease": "Minska antal"
+      },
+      "pick_variant": "Välj {{ variant_type }}",
+      "in_stock": "I lager",
+      "low_stock": "Endast {{ count }} kvar",
+      "out_of_stock": "Tillfälligt slut"
+    },
+    "facets": {
+      "sort_by_label": "Sortera efter",
+      "sort_by": {
+        "manual": "Rekommenderade",
+        "best-selling": "Bäst säljande",
+        "title-ascending": "A–Ö",
+        "title-descending": "Ö–A",
+        "price-ascending": "Pris: lägst",
+        "price-descending": "Pris: högst",
+        "created-descending": "Nyaste"
+      }
+    }
+  },
+  "sections": {
+    "header": {
+      "search": "Sök",
+      "cart": "Kundvagn"
+    }
+  }
+}

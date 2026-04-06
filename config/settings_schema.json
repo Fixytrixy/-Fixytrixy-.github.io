@@ -1,0 +1,234 @@
+[
+  {
+    "name": "Färger",
+    "settings": [
+      {
+        "type": "color",
+        "id": "colors_text",
+        "label": "Textfärg",
+        "default": "#212121"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_1",
+        "label": "Bakgrundsfärg 1",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_2",
+        "label": "Bakgrundsfärg 2",
+        "default": "#f8f8f6"
+      },
+      {
+        "type": "color",
+        "id": "colors_solid_button_labels",
+        "label": "Solid-knapp text",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "colors_outline_button_labels",
+        "label": "Outline-knapp text",
+        "default": "#2e7d32"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_1",
+        "label": "Accentfärg 1",
+        "default": "#2e7d32"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_2",
+        "label": "Accentfärg 2",
+        "default": "#f57c00"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primärfärg",
+        "default": "#2e7d32"
+      }
+    ]
+  },
+  {
+    "name": "Typografi",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Brödtextfont",
+        "default": "inter_n4"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "label": "Rubrikfont",
+        "default": "poppins_n7"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 100,
+        "unit": "px",
+        "label": "Sidbredd",
+        "default": 1200
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Sektionsavstånd",
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "Logotyp",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logotyp"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 50,
+        "max": 250,
+        "step": 10,
+        "unit": "px",
+        "label": "Logotypbredd",
+        "default": 160
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
+    ]
+  },
+  {
+    "name": "Kundvagn",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Kundvagnstyp",
+        "options": [
+          {"value": "drawer", "label": "Skjutpanel (drawer)"},
+          {"value": "page", "label": "Sida"}
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_icon_with_count",
+        "label": "Visa antal i kundvagnsikon",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Sociala medier",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_instagram_link",
+        "label": "Instagram-URL"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook_link",
+        "label": "Facebook-URL"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok_link",
+        "label": "TikTok-URL"
+      },
+      {
+        "type": "url",
+        "id": "social_pinterest_link",
+        "label": "Pinterest-URL"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube_link",
+        "label": "YouTube-URL"
+      }
+    ]
+  },
+  {
+    "name": "Analytics & Tracking",
+    "settings": [
+      {
+        "type": "text",
+        "id": "ga4_measurement_id",
+        "label": "Google Analytics 4 Measurement ID",
+        "info": "Format: G-XXXXXXXXXX. Lämna tomt om du inte vill använda GA4.",
+        "placeholder": "G-XXXXXXXXXX"
+      },
+      {
+        "type": "text",
+        "id": "meta_pixel_id",
+        "label": "Meta (Facebook) Pixel ID",
+        "info": "Lämna tomt om du inte vill använda Meta Pixel.",
+        "placeholder": "XXXXXXXXXXXXXXXXX"
+      },
+      {
+        "type": "text",
+        "id": "tiktok_pixel_id",
+        "label": "TikTok Pixel ID",
+        "info": "Lämna tomt om du inte vill använda TikTok Pixel.",
+        "placeholder": "XXXXXXXXXXXXXXXXX"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_api_key",
+        "label": "Klaviyo Public API Key",
+        "info": "Din offentliga Klaviyo-API-nyckel (börjar med pk_).",
+        "placeholder": "pk_XXXXXXXXXX"
+      }
+    ]
+  },
+  {
+    "name": "Exit Intent Popup",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "exit_intent_enabled",
+        "label": "Aktivera exit-intent popup",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Frakt & retur",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Fri frakt från (kr)",
+        "default": 499
+      },
+      {
+        "type": "number",
+        "id": "return_days",
+        "label": "Öppet köp (dagar)",
+        "default": 30
+      }
+    ]
+  }
+]

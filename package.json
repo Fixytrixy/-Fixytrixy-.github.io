@@ -1,0 +1,23 @@
+{
+  "name": "fixaotrixa-shopify-theme",
+  "version": "1.0.0",
+  "description": "Fixaotrixa – Shopify-tema och produktimporter för Sveriges bästa förvaringsbutik",
+  "scripts": {
+    "import": "node scripts/amazon-product-importer.js",
+    "dev": "shopify theme dev --store=xivfqd-hz.myshopify.com",
+    "push": "shopify theme push --store=xivfqd-hz.myshopify.com",
+    "pull": "shopify theme pull --store=xivfqd-hz.myshopify.com"
+  },
+  "keywords": [
+    "shopify",
+    "theme",
+    "ecommerce",
+    "förvaring",
+    "swedish"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
