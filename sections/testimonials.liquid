@@ -1,0 +1,231 @@
+{% comment %}
+  Testimonials Section – kundrecensioner och socialt bevis
+{% endcomment %}
+
+<section class="testimonials section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div class="testimonials__header">
+      <h2 class="testimonials__heading">{{ section.settings.heading }}</h2>
+      <p class="testimonials__subheading">{{ section.settings.subheading }}</p>
+
+      <!-- Overall rating summary -->
+      <div class="testimonials__summary" aria-label="Samlat betyg">
+        <div class="testimonials__overall-score">{{ section.settings.overall_rating }}</div>
+        <div class="testimonials__stars" aria-label="{{ section.settings.overall_rating }} av 5 stjärnor">
+          {% assign full_stars = section.settings.overall_rating | floor %}
+          {% for i in (1..5) %}
+            <svg class="star{% if i > full_stars %} star--empty{% endif %}" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          {% endfor %}
+        </div>
+        <p class="testimonials__total">{{ section.settings.total_reviews }} verifierade recensioner</p>
+      </div>
+    </div>
+
+    <div class="testimonials__grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'review' -%}
+          <article class="review-card" {{ block.shopify_attributes }}>
+            <header class="review-card__header">
+              <div class="review-card__stars" aria-label="{{ block.settings.rating }} av 5 stjärnor">
+                {% assign r = block.settings.rating %}
+                {% for i in (1..5) %}
+                  <svg class="star{% if i > r %} star--empty{% endif %}" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                {% endfor %}
+              </div>
+              {%- if block.settings.verified -%}
+                <span class="review-card__verified">✓ Verifierat köp</span>
+              {%- endif -%}
+            </header>
+
+            {%- if block.settings.title != blank -%}
+              <h3 class="review-card__title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+
+            <blockquote class="review-card__body">
+              <p>{{ block.settings.text }}</p>
+            </blockquote>
+
+            <footer class="review-card__footer">
+              <div class="review-card__author">
+                {%- if block.settings.author_image != blank -%}
+                  <img
+                    src="{{ block.settings.author_image | image_url: width: 48, height: 48 }}"
+                    alt="{{ block.settings.author }}"
+                    loading="lazy"
+                    width="48"
+                    height="48"
+                    class="review-card__avatar">
+                {%- else -%}
+                  <div class="review-card__avatar-placeholder" aria-hidden="true">
+                    {{ block.settings.author | slice: 0 }}
+                  </div>
+                {%- endif -%}
+                <div class="review-card__author-info">
+                  <cite class="review-card__author-name">{{ block.settings.author }}</cite>
+                  <span class="review-card__location">{{ block.settings.location }}</span>
+                </div>
+              </div>
+              <time class="review-card__date">{{ block.settings.date }}</time>
+            </footer>
+          </article>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_label != blank -%}
+      <div class="testimonials__footer">
+        <a href="{{ section.settings.cta_link }}" class="btn btn--outline">
+          {{ section.settings.cta_label }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kundrecensioner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Vad våra kunder säger"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Tusentals nöjda kunder i hela Sverige"
+    },
+    {
+      "type": "text",
+      "id": "overall_rating",
+      "label": "Samlat betyg",
+      "default": "4.8"
+    },
+    {
+      "type": "text",
+      "id": "total_reviews",
+      "label": "Totalt antal recensioner",
+      "default": "1 247"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA-knapptext",
+      "default": "Läs alla recensioner"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA-länk"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Recension",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Betyg (1–5)",
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verifierat köp",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Recensionsrubrik",
+          "default": "Helt fantastisk produkt!"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Recensionstext",
+          "default": "Köpte köksorganisatören och nu är mitt skafferi ett nöje att titta in i. Superenkel montering och riktigt bra kvalitet för priset."
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Profilbild"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Namn",
+          "default": "Anna L."
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Stad",
+          "default": "Stockholm"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Datum",
+          "default": "mars 2024"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Kundrecensioner",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Helt förvandlat mitt kök!",
+            "text": "Köpte köksorganisatören och nu är mitt skafferi ett nöje att titta in i. Superenkel montering och riktigt bra kvalitet för priset.",
+            "author": "Anna L.",
+            "location": "Stockholm",
+            "date": "mars 2024"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Äntligen ordning i garderoben!",
+            "text": "Köpt garderobssystemet och det är det bästa jag gjort. Allt har sin plats och jag hittar kläder på en sekund. Rekommenderas varmt!",
+            "author": "Erik S.",
+            "location": "Göteborg",
+            "date": "februari 2024"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Perfekt för litet badrum",
+            "text": "Duschhyllan passar perfekt och ser jättesnygg ut. Rostfritt och hålls rent enkelt. Snabb leverans på 3 dagar!",
+            "author": "Maria K.",
+            "location": "Malmö",
+            "date": "april 2024"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

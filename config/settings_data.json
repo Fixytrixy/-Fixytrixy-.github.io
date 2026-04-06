@@ -1,0 +1,12 @@
+{
+  "name": "Fixaotrixa",
+  "author": "Fixaotrixa",
+  "version": "1.0.0",
+  "theme_store_id": null,
+  "role": "main",
+  "handle": "fixaotrixa",
+  "style": {
+    "name": "Fixaotrixa Standard",
+    "role": "main"
+  }
+}

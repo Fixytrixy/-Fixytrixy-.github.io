@@ -1,0 +1,142 @@
+{% comment %}
+  Quiz Section – "Vilket rum ska vi fixa?"
+  Interaktivt quiz som leder besökare till rätt kategori
+{% endcomment %}
+
+<section class="quiz-section section-{{ section.id }}-padding" id="quiz-section">
+  <div class="page-width">
+    <div class="quiz-wrapper">
+      <div class="quiz__header">
+        <h2 class="quiz__heading">{{ section.settings.heading }}</h2>
+        <p class="quiz__subheading">{{ section.settings.subheading }}</p>
+      </div>
+
+      <div class="quiz__container" id="quiz-container" role="main" aria-label="Interaktivt quiz">
+        <!-- Step 1: Which room? -->
+        <div class="quiz__step quiz__step--active" id="quiz-step-1" role="group" aria-labelledby="quiz-step-1-title">
+          <h3 id="quiz-step-1-title" class="quiz__step-title">Vilket rum vill du organisera?</h3>
+          <div class="quiz__options quiz__options--grid">
+            <button class="quiz__option" data-next="2" data-value="kok" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🍳</span>
+              <span class="quiz__option-label">Köket</span>
+            </button>
+            <button class="quiz__option" data-next="2" data-value="sovrum" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🛏️</span>
+              <span class="quiz__option-label">Sovrummet</span>
+            </button>
+            <button class="quiz__option" data-next="2" data-value="badrum" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🚿</span>
+              <span class="quiz__option-label">Badrummet</span>
+            </button>
+            <button class="quiz__option" data-next="2" data-value="tradgard" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🌿</span>
+              <span class="quiz__option-label">Trädgården</span>
+            </button>
+            <button class="quiz__option" data-next="2" data-value="hall" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">👟</span>
+              <span class="quiz__option-label">Hallen</span>
+            </button>
+            <button class="quiz__option" data-next="2" data-value="kontor" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">💼</span>
+              <span class="quiz__option-label">Kontoret</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: What's the problem? -->
+        <div class="quiz__step" id="quiz-step-2" role="group" aria-labelledby="quiz-step-2-title">
+          <h3 id="quiz-step-2-title" class="quiz__step-title">Vad är det största problemet?</h3>
+          <div class="quiz__options quiz__options--list">
+            <button class="quiz__option quiz__option--list" data-next="3" data-value="platsbrist" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">📦</span>
+              <span class="quiz__option-label">Brist på förvaringsutrymme</span>
+            </button>
+            <button class="quiz__option quiz__option--list" data-next="3" data-value="oordning" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🌀</span>
+              <span class="quiz__option-label">Saker hamnar överallt</span>
+            </button>
+            <button class="quiz__option quiz__option--list" data-next="3" data-value="estetik" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">✨</span>
+              <span class="quiz__option-label">Vill ha snyggare look</span>
+            </button>
+            <button class="quiz__option quiz__option--list" data-next="3" data-value="effektivitet" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">⚡</span>
+              <span class="quiz__option-label">Svårt att hitta saker snabbt</span>
+            </button>
+          </div>
+          <button class="quiz__back" data-back="1" type="button">← Tillbaka</button>
+        </div>
+
+        <!-- Step 3: Budget -->
+        <div class="quiz__step" id="quiz-step-3" role="group" aria-labelledby="quiz-step-3-title">
+          <h3 id="quiz-step-3-title" class="quiz__step-title">Vad är din budget?</h3>
+          <div class="quiz__options quiz__options--list">
+            <button class="quiz__option quiz__option--list" data-next="result" data-value="low" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">💚</span>
+              <span class="quiz__option-label">Under 500 kr</span>
+            </button>
+            <button class="quiz__option quiz__option--list" data-next="result" data-value="mid" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">💛</span>
+              <span class="quiz__option-label">500 – 1 500 kr</span>
+            </button>
+            <button class="quiz__option quiz__option--list" data-next="result" data-value="high" type="button">
+              <span class="quiz__option-icon" aria-hidden="true">🧡</span>
+              <span class="quiz__option-label">Över 1 500 kr</span>
+            </button>
+          </div>
+          <button class="quiz__back" data-back="2" type="button">← Tillbaka</button>
+        </div>
+
+        <!-- Result step -->
+        <div class="quiz__step" id="quiz-step-result" role="group" aria-labelledby="quiz-result-title">
+          <div class="quiz__result">
+            <div class="quiz__result-icon" aria-hidden="true">🎯</div>
+            <h3 id="quiz-result-title" class="quiz__result-heading">Vi hittade rätt produkter för dig!</h3>
+            <p class="quiz__result-text" id="quiz-result-text">Baserat på dina svar rekommenderar vi följande:</p>
+            <a href="#" class="btn btn--primary btn--large" id="quiz-result-cta">
+              Se mina rekommendationer →
+            </a>
+            <button class="quiz__restart btn btn--ghost" id="quiz-restart" type="button">
+              Ta quizet igen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="quiz__progress" aria-label="Quizets framsteg" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+        <div class="quiz__progress-bar">
+          <div class="quiz__progress-fill" id="quiz-progress-fill"></div>
+        </div>
+        <span class="quiz__progress-text" id="quiz-progress-text">Steg 1 av 3</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Quiz – Vilket rum?",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Vilket rum ska vi fixa?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Svara på 3 frågor så hittar vi rätt förvaringslösning för dig"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quiz – Vilket rum?"
+    }
+  ]
+}
+{% endschema %}

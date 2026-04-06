@@ -1,0 +1,353 @@
+{% comment %}
+  Product Template – Fixaotrixa
+  Fullständig produktsida med SEO, recensioner och köpknapp
+{% endcomment %}
+
+{%- assign product = product -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign product_form_id = 'product-form-' | append: product.id -%}
+
+<!-- Schema.org Product structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncate: 500 | json }},
+  "image": [
+    {%- for image in product.images limit: 5 -%}
+      {{ image | image_url: width: 800 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ],
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  },
+  "sku": {{ current_variant.sku | json }},
+  "offers": {
+    "@type": "Offer",
+    "url": {{ request.origin | append: product.url | json }},
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": {{ current_variant.price | divided_by: 100.0 | json }},
+    "availability": {% if current_variant.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %},
+    "seller": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }}
+    }
+  }
+  {%- if product.metafields.reviews.rating -%}
+  ,
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ product.metafields.reviews.rating.value.rating | json }},
+    "reviewCount": {{ product.metafields.reviews.rating_count | json }}
+  }
+  {%- endif -%}
+}
+</script>
+
+<!-- BreadcrumbList structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Hem",
+      "item": {{ request.origin | json }}
+    },
+    {%- if collection -%}
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ collection.title | json }},
+      "item": {{ request.origin | append: collection.url | json }}
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": {{ product.title | json }},
+      "item": {{ request.origin | append: product.url | json }}
+    }
+    {%- else -%}
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ product.title | json }},
+      "item": {{ request.origin | append: product.url | json }}
+    }
+    {%- endif -%}
+  ]
+}
+</script>
+
+<div class="product-page page-width">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs" aria-label="Brödsmulor">
+    <ol class="breadcrumbs__list">
+      <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link">Hem</a></li>
+      {%- if collection -%}
+        <li class="breadcrumbs__item"><a href="{{ collection.url }}" class="breadcrumbs__link">{{ collection.title }}</a></li>
+      {%- endif -%}
+      <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">{{ product.title }}</li>
+    </ol>
+  </nav>
+
+  <div class="product-page__grid">
+    <!-- Product Images -->
+    <div class="product-page__media">
+      <div class="product-media" id="product-media-{{ product.id }}">
+        {%- if product.images.size > 0 -%}
+          <div class="product-media__main">
+            <img
+              id="product-featured-image"
+              src="{{ product.featured_image | image_url: width: 800 }}"
+              srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
+                      {{ product.featured_image | image_url: width: 800 }} 800w,
+                      {{ product.featured_image | image_url: width: 1200 }} 1200w"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              alt="{{ product.featured_image.alt | default: product.title | escape }}"
+              loading="eager"
+              fetchpriority="high"
+              width="800"
+              height="800"
+              class="product-media__featured">
+          </div>
+
+          {%- if product.images.size > 1 -%}
+            <div class="product-media__thumbnails" role="list" aria-label="Produktbilder">
+              {%- for image in product.images -%}
+                <button
+                  class="product-media__thumb{% if forloop.first %} product-media__thumb--active{% endif %}"
+                  data-image-src="{{ image | image_url: width: 800 }}"
+                  data-image-alt="{{ image.alt | default: product.title | escape }}"
+                  type="button"
+                  role="listitem"
+                  aria-label="Visa bild {{ forloop.index }}">
+                  <img
+                    src="{{ image | image_url: width: 100 }}"
+                    alt="{{ image.alt | default: product.title | escape }}"
+                    loading="lazy"
+                    width="100"
+                    height="100">
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'product-media__placeholder' }}
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-page__info">
+      {%- if product.vendor -%}
+        <p class="product-page__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+
+      <h1 class="product-page__title">{{ product.title }}</h1>
+
+      <!-- Ratings -->
+      {%- if product.metafields.reviews.rating -%}
+        <div class="product-page__rating" aria-label="{{ product.metafields.reviews.rating.value.rating }} av 5 stjärnor">
+          <div class="rating-stars" aria-hidden="true">
+            {% assign rating_val = product.metafields.reviews.rating.value.rating | round %}
+            {% for i in (1..5) %}
+              <svg class="star{% if i > rating_val %} star--empty{% endif %}" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            {% endfor %}
+          </div>
+          <a href="#reviews" class="product-page__review-count">
+            {{ product.metafields.reviews.rating_count }} recensioner
+          </a>
+        </div>
+      {%- endif -%}
+
+      <!-- Price -->
+      <div class="product-page__price">
+        {%- if current_variant.compare_at_price > current_variant.price -%}
+          <span class="product-page__price-compare" aria-label="Ordinarie pris">
+            <s>{{ current_variant.compare_at_price | money }}</s>
+          </span>
+          <span class="product-page__price-current product-page__price--sale" aria-label="Rea-pris">
+            {{ current_variant.price | money }}
+          </span>
+          <span class="product-page__badge product-page__badge--sale">
+            Spara {{ current_variant.compare_at_price | minus: current_variant.price | money }}
+          </span>
+        {%- else -%}
+          <span class="product-page__price-current" aria-label="Pris">
+            {{ current_variant.price | money }}
+          </span>
+        {%- endif -%}
+      </div>
+
+      <!-- Stock indicator -->
+      {%- if current_variant.inventory_management == 'shopify' -%}
+        <div class="product-page__stock">
+          {%- if current_variant.inventory_quantity <= 10 and current_variant.inventory_quantity > 0 -%}
+            <span class="stock-indicator stock-indicator--low">
+              ⚠️ Endast {{ current_variant.inventory_quantity }} kvar i lager!
+            </span>
+          {%- elsif current_variant.available -%}
+            <span class="stock-indicator stock-indicator--in">
+              ✓ I lager
+            </span>
+          {%- else -%}
+            <span class="stock-indicator stock-indicator--out">
+              ✗ Tillfälligt slut
+            </span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <!-- Product Form -->
+      {%- form 'product', product, id: product_form_id, class: 'product-form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+        {%- if product.has_only_default_variant == false -%}
+          <div class="product-form__variants">
+            {%- for option in product.options_with_values -%}
+              <div class="product-form__option">
+                <label class="product-form__option-label" for="Option{{ forloop.index }}">
+                  {{ option.name }}
+                </label>
+                <select
+                  id="Option{{ forloop.index }}"
+                  class="product-form__option-select"
+                  name="options[{{ option.name | escape }}]"
+                  form="{{ product_form_id }}">
+                  {%- for value in option.values -%}
+                    <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                      {{ value }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <!-- Quantity -->
+        <div class="product-form__quantity">
+          <label class="product-form__quantity-label" for="Quantity-{{ product.id }}">Antal</label>
+          <div class="quantity-selector">
+            <button type="button" class="quantity-selector__btn" aria-label="Minska antal" data-action="minus">−</button>
+            <input
+              id="Quantity-{{ product.id }}"
+              class="quantity-selector__input"
+              type="number"
+              name="quantity"
+              value="1"
+              min="1"
+              aria-label="Antal">
+            <button type="button" class="quantity-selector__btn" aria-label="Öka antal" data-action="plus">+</button>
+          </div>
+        </div>
+
+        <div class="product-form__buttons">
+          <button
+            type="submit"
+            name="add"
+            class="btn btn--primary btn--full product-form__add-to-cart"
+            {%- if current_variant.available == false -%}disabled{%- endif -%}
+            aria-label="{% if current_variant.available %}Lägg i varukorg – {{ product.title }}{% else %}Slutsåld{% endif %}">
+            {%- if current_variant.available -%}
+              <span>Lägg i varukorg</span>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z"/></svg>
+            {%- else -%}
+              Slutsåld
+            {%- endif -%}
+          </button>
+        </div>
+      {%- endform -%}
+
+      <!-- USPs / Delivery info -->
+      <div class="product-page__usps">
+        <div class="usp-item">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
+          <span>Leverans om 2–5 vardagar</span>
+        </div>
+        <div class="usp-item">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          <span>30 dagars öppet köp</span>
+        </div>
+        <div class="usp-item">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+          <span>Säker betalning</span>
+        </div>
+        <div class="usp-item">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <span>Fri frakt över 499 kr</span>
+        </div>
+      </div>
+
+      <!-- Product Description -->
+      {%- if product.description != blank -%}
+        <div class="product-page__description rte" id="product-description">
+          <h2 class="product-page__description-heading">Produktbeskrivning</h2>
+          {{ product.description }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="related-products" id="related-products">
+      <h2 class="related-products__heading">Köpte även</h2>
+      <div class="related-products__grid">
+        {%- for rec_product in recommendations.products limit: 4 -%}
+          <div class="product-card">
+            <a href="{{ rec_product.url }}" class="product-card__link">
+              <div class="product-card__media">
+                <img
+                  src="{{ rec_product.featured_image | image_url: width: 400 }}"
+                  alt="{{ rec_product.featured_image.alt | default: rec_product.title | escape }}"
+                  loading="lazy"
+                  width="400"
+                  height="400">
+              </div>
+              <div class="product-card__info">
+                <h3 class="product-card__title">{{ rec_product.title }}</h3>
+                <p class="product-card__price">{{ rec_product.price | money }}</p>
+              </div>
+            </a>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  // Thumbnail image switcher
+  document.querySelectorAll('.product-media__thumb').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var featuredImg = document.getElementById('product-featured-image');
+      featuredImg.src = this.dataset.imageSrc;
+      featuredImg.alt = this.dataset.imageAlt;
+      document.querySelectorAll('.product-media__thumb').forEach(function(b) {
+        b.classList.remove('product-media__thumb--active');
+      });
+      this.classList.add('product-media__thumb--active');
+    });
+  });
+
+  // Quantity selector
+  document.querySelectorAll('.quantity-selector__btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var input = this.closest('.quantity-selector').querySelector('.quantity-selector__input');
+      var val = parseInt(input.value, 10);
+      if (this.dataset.action === 'plus') {
+        input.value = val + 1;
+      } else if (this.dataset.action === 'minus' && val > 1) {
+        input.value = val - 1;
+      }
+    });
+  });
+</script>
