@@ -219,6 +219,65 @@
     }
   }
 
+  /* ─── Room Filter (collection page) ─── */
+  (function () {
+    var filterBar = document.getElementById('room-filter');
+    if (!filterBar) return;
+
+    var grid = document.getElementById('product-grid');
+    var noResults = document.getElementById('room-filter-no-results');
+    var buttons = filterBar.querySelectorAll('.room-filter__btn');
+
+    // Read initial filter from URL param ?tag=room-kitchen
+    var params = new URLSearchParams(window.location.search);
+    var activeRoom = params.get('tag') || '';
+
+    function applyFilter(room) {
+      activeRoom = room;
+
+      // Update button states
+      buttons.forEach(function (btn) {
+        btn.setAttribute('aria-pressed', btn.dataset.room === room ? 'true' : 'false');
+      });
+
+      // Show/hide products
+      var visibleCount = 0;
+      if (grid) {
+        grid.querySelectorAll('.product-grid__item').forEach(function (item) {
+          var tags = item.dataset.tags || '';
+          var visible = !room || (tags !== '' && tags.split(',').some(function (t) { return t.trim() === room; }));
+          item.classList.toggle('product-grid__item--hidden', !visible);
+          if (visible) visibleCount++;
+        });
+      }
+
+      // No-results message
+      if (noResults) {
+        noResults.classList.toggle('collection-page__no-results--visible', visibleCount === 0 && room !== '');
+      }
+
+      // Update URL param without reload
+      var newParams = new URLSearchParams(window.location.search);
+      if (room) {
+        newParams.set('tag', room);
+      } else {
+        newParams.delete('tag');
+      }
+      var newUrl = window.location.pathname + (newParams.toString() ? '?' + newParams.toString() : '');
+      history.replaceState(null, '', newUrl);
+    }
+
+    // Apply initial filter from URL
+    applyFilter(activeRoom);
+
+    // Click handlers
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyFilter(btn.dataset.room);
+      });
+    });
+  }());
+
   /* ─── Init ─── */
   updateCartCount();
 

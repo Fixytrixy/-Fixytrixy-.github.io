@@ -413,6 +413,17 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .collection-page__toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--color-border); flex-wrap: wrap; gap: var(--spacing-md); }
 .collection-page__count { font-size: 0.875rem; color: var(--color-text-light); }
 .sort-select { padding: 8px var(--spacing-md); border: 1px solid var(--color-border); border-radius: var(--border-radius); font: inherit; background: #fff; }
+
+/* ---- Room Filter ---- */
+.room-filter { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding: var(--spacing-md) 0; border-bottom: 1px solid var(--color-border); }
+.room-filter__label { font-size: 0.875rem; font-weight: 600; color: var(--color-text-light); margin-right: var(--spacing-xs); white-space: nowrap; }
+.room-filter__btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 0.875rem; font-weight: 500; border: 2px solid var(--color-border); border-radius: 999px; background: #fff; color: var(--color-text); transition: all var(--transition); cursor: pointer; }
+.room-filter__btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.room-filter__btn[aria-pressed="true"] { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.room-filter__btn .room-filter__icon { font-size: 1rem; line-height: 1; }
+.product-grid__item--hidden { display: none; }
+.collection-page__no-results { display: none; text-align: center; padding: var(--spacing-xl); color: var(--color-text-light); width: 100%; }
+.collection-page__no-results--visible { display: block; }
 .collection-page__empty { text-align: center; padding: var(--spacing-xxl); color: var(--color-text-light); }
 .collection-page__empty a { margin-top: var(--spacing-lg); }
 
