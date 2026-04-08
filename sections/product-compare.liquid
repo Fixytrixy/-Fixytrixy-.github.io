@@ -1,0 +1,299 @@
+{% comment %}
+  Product Compare Section – Fixaotrixa
+  Jämför 2–3 förvaringsprodukter sida vid sida med attribut från metafält
+  Metafält som används per produkt:
+    custom.dimensions    – Mått (t.ex. "40×30×20 cm")
+    custom.material      – Material (t.ex. "Bambu")
+    custom.color_options – Färgalternativ (t.ex. "Natur, Vit, Svart")
+    custom.stackable     – Stapelbar (boolean)
+    reviews.rating       – Kundbetyg (Shopify Product Reviews)
+    reviews.rating_count – Antal recensioner
+{% endcomment %}
+
+{%- assign product_blocks = section.blocks | where: 'type', 'product' -%}
+{%- assign product_count = product_blocks | size -%}
+
+<section
+  class="product-compare"
+  aria-labelledby="compare-heading-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="product-compare">
+  <div class="page-width">
+
+    <div class="product-compare__header">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="product-compare__heading" id="compare-heading-{{ section.id }}">
+          {{ section.settings.heading }}
+        </h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="product-compare__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if product_count > 0 -%}
+      <div class="product-compare__scroll-wrapper" role="region" aria-label="{{ 'sections.product_compare.aria_label' | t: default: 'Produktjämförelse' }}">
+        <table class="product-compare__table">
+          <caption class="sr-only">{{ section.settings.heading | default: 'Produktjämförelse' }}</caption>
+
+          {%- comment -%} ── PRODUCT HEADER ROW ── {%- endcomment -%}
+          <thead>
+            <tr class="product-compare__header-row">
+              <th class="product-compare__attr-col" scope="col">
+                <span class="sr-only">Attribut</span>
+              </th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <th class="product-compare__product-col" scope="col" {{ block.shopify_attributes }}>
+                    <div class="product-compare__product-header">
+                      {%- if p.featured_image -%}
+                        <a href="{{ p.url }}" class="product-compare__img-link" tabindex="0" aria-label="{{ p.title }}">
+                          <img
+                            src="{{ p.featured_image | image_url: width: 220 }}"
+                            srcset="{{ p.featured_image | image_url: width: 110 }} 110w,
+                                    {{ p.featured_image | image_url: width: 220 }} 220w"
+                            sizes="(min-width: 768px) 220px, 110px"
+                            alt="{{ p.featured_image.alt | default: p.title | escape }}"
+                            loading="lazy"
+                            width="220"
+                            height="220"
+                            class="product-compare__product-img">
+                        </a>
+                      {%- else -%}
+                        {{ 'product-1' | placeholder_svg_tag: 'product-compare__product-img product-compare__product-img--placeholder' }}
+                      {%- endif -%}
+                      <h3 class="product-compare__product-title">
+                        <a href="{{ p.url }}" class="product-compare__product-link">{{ p.title }}</a>
+                      </h3>
+                    </div>
+                  </th>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {%- comment -%} ── PRICE ── {%- endcomment -%}
+            <tr class="product-compare__row">
+              <th class="product-compare__attr-label" scope="row">Pris</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  {%- assign v = p.selected_or_first_available_variant -%}
+                  <td class="product-compare__cell product-compare__cell--price">
+                    {%- if v.compare_at_price > v.price -%}
+                      <s class="product-compare__price-compare" aria-label="Ordinarie pris {{ v.compare_at_price | money }}">
+                        {{ v.compare_at_price | money }}
+                      </s>
+                      <span class="product-compare__price product-compare__price--sale" aria-label="Rea-pris {{ v.price | money }}">
+                        {{ v.price | money }}
+                      </span>
+                    {%- else -%}
+                      <span class="product-compare__price">{{ v.price | money }}</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── CUSTOMER RATING ── {%- endcomment -%}
+            <tr class="product-compare__row product-compare__row--alt">
+              <th class="product-compare__attr-label" scope="row">Kundbetyg</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell">
+                    {%- if p.metafields.reviews.rating != blank -%}
+                      {%- assign rating_value = p.metafields.reviews.rating.value.rating | round | at_least: 1 -%}
+                      <div class="product-compare__stars" aria-label="{{ p.metafields.reviews.rating.value.rating }} av 5 stjärnor">
+                        {%- for i in (1..5) -%}
+                          <svg class="star{% if i > rating_value %} star--empty{% endif %}" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        {%- endfor -%}
+                        {%- if p.metafields.reviews.rating_count != blank -%}
+                          <span class="product-compare__rating-count">({{ p.metafields.reviews.rating_count }})</span>
+                        {%- endif -%}
+                      </div>
+                    {%- else -%}
+                      <span class="product-compare__no-data" aria-label="Inget betyg">–</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── DIMENSIONS ── {%- endcomment -%}
+            <tr class="product-compare__row">
+              <th class="product-compare__attr-label" scope="row">Mått (L×B×H)</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell">
+                    {%- if p.metafields.custom.dimensions != blank -%}
+                      {{ p.metafields.custom.dimensions.value }}
+                    {%- else -%}
+                      <span class="product-compare__no-data" aria-label="Ej angivet">–</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── MATERIAL ── {%- endcomment -%}
+            <tr class="product-compare__row product-compare__row--alt">
+              <th class="product-compare__attr-label" scope="row">Material</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell">
+                    {%- if p.metafields.custom.material != blank -%}
+                      {{ p.metafields.custom.material.value }}
+                    {%- else -%}
+                      <span class="product-compare__no-data" aria-label="Ej angivet">–</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── COLOR OPTIONS ── {%- endcomment -%}
+            <tr class="product-compare__row">
+              <th class="product-compare__attr-label" scope="row">Färgalternativ</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell">
+                    {%- if p.metafields.custom.color_options != blank -%}
+                      {{ p.metafields.custom.color_options.value }}
+                    {%- else -%}
+                      <span class="product-compare__no-data" aria-label="Ej angivet">–</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── STACKABLE ── {%- endcomment -%}
+            <tr class="product-compare__row product-compare__row--alt">
+              <th class="product-compare__attr-label" scope="row">Stapelbar</th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell">
+                    {%- if p.metafields.custom.stackable != blank -%}
+                      {%- assign stackable_val = p.metafields.custom.stackable.value -%}
+                      {%- if stackable_val == true or stackable_val == 'true' -%}
+                        <span class="product-compare__check product-compare__check--yes" aria-label="Ja, stapelbar">
+                          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="12" fill="#2e7d32"/>
+                            <path d="M7 12l3.5 3.5L17 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                          Ja
+                        </span>
+                      {%- else -%}
+                        <span class="product-compare__check product-compare__check--no" aria-label="Nej, inte stapelbar">
+                          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="12" fill="#c62828"/>
+                            <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                          </svg>
+                          Nej
+                        </span>
+                      {%- endif -%}
+                    {%- else -%}
+                      <span class="product-compare__no-data" aria-label="Ej angivet">–</span>
+                    {%- endif -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+            {%- comment -%} ── ADD TO CART ── {%- endcomment -%}
+            <tr class="product-compare__row product-compare__row--actions">
+              <th class="product-compare__attr-label" scope="row">
+                <span class="sr-only">Köp</span>
+              </th>
+              {%- for block in product_blocks -%}
+                {%- assign p = all_products[block.settings.product] -%}
+                {%- if p != blank -%}
+                  <td class="product-compare__cell product-compare__cell--action">
+                    {%- form 'product', p, class: 'product-compare__form' -%}
+                      <input type="hidden" name="id" value="{{ p.selected_or_first_available_variant.id }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <button
+                        type="submit"
+                        name="add"
+                        class="btn btn--primary btn--full btn--small"
+                        {%- unless p.available -%}disabled{%- endunless -%}
+                        aria-label="{% if p.available %}Lägg i varukorg – {{ p.title }}{% else %}Slutsåld – {{ p.title }}{% endif %}">
+                        {%- if p.available -%}
+                          Lägg i varukorg
+                        {%- else -%}
+                          Slutsåld
+                        {%- endif -%}
+                      </button>
+                    {%- endform -%}
+                  </td>
+                {%- endif -%}
+              {%- endfor -%}
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    {%- else -%}
+      <p class="product-compare__empty">Inga produkter har valts för jämförelse ännu.</p>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produktjämförelse",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Jämför produkter"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Hitta rätt förvaringslösning för ditt hem"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Produkt",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Välj produkt"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "Produktjämförelse",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
