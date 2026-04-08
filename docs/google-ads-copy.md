@@ -18,14 +18,14 @@ Character limits: Headline ≤ 30 chars | Description ≤ 90 chars
 
 ---
 
-## Variation 2 – Stylish & Organised
+## Variation 2 – Stylish & Organized
 
 | Field         | Copy                                                                                      | Chars |
 |---------------|-------------------------------------------------------------------------------------------|-------|
-| Headline 1    | Stay Stylish & Organised                                                                  | 25    |
+| Headline 1    | Stay Stylish & Organized                                                                  | 25    |
 | Headline 2    | Premium Shelf Organizers                                                                  | 24    |
 | Headline 3    | Tidy Home, Tidy Mind                                                                      | 21    |
-| Description 1 | Transform cluttered shelves into clean, beautiful displays. Shop our full organiser range. | 89    |
+| Description 1 | Transform cluttered shelves into clean, beautiful displays. Shop our full organizer range. | 89    |
 | Description 2 | Stylish designs that complement any décor. Fast delivery & hassle-free returns available. | 89    |
 
 ---
@@ -35,9 +35,9 @@ Character limits: Headline ≤ 30 chars | Description ≤ 90 chars
 | Field         | Copy                                                                                      | Chars |
 |---------------|-------------------------------------------------------------------------------------------|-------|
 | Headline 1    | Wardrobe Space Doubled                                                                    | 22    |
-| Headline 2    | Smart Wardrobe Organisers                                                                 | 27    |
-| Headline 3    | Find Everything Instantly                                                                 | 27    |
-| Description 1 | Reclaim lost wardrobe space with our modular organiser systems. Simple, no-tool assembly. | 89    |
+| Headline 2    | Smart Wardrobe Organizers                                                                 | 26    |
+| Headline 3    | Find Everything Instantly                                                                 | 25    |
+| Description 1 | Reclaim lost wardrobe space with our modular organizer systems. Simple, no-tool assembly. | 89    |
 | Description 2 | From hanging dividers to drawer inserts – the complete wardrobe solution in one store.    | 87    |
 
 ---
@@ -54,14 +54,14 @@ Character limits: Headline ≤ 30 chars | Description ≤ 90 chars
 
 ---
 
-## Variation 5 – Home Organisation Sale
+## Variation 5 – Home Organization Sale
 
 | Field         | Copy                                                                                      | Chars |
 |---------------|-------------------------------------------------------------------------------------------|-------|
-| Headline 1    | Home Organisation Sale                                                                    | 23    |
+| Headline 1    | Home Organization Sale                                                                    | 22    |
 | Headline 2    | Up to 30% Off Storage                                                                     | 22    |
 | Headline 3    | Boxes, Shelves & Wardrobes                                                                | 28    |
-| Description 1 | Big savings on storage boxes, shelf organisers & wardrobe solutions. Limited time offer.  | 89    |
+| Description 1 | Big savings on storage boxes, shelf organizers & wardrobe solutions. Limited time offer.  | 89    |
 | Description 2 | Rated 4.8 ★ by thousands of happy customers. Order before midnight for next-day delivery. | 90    |
 
 ---
