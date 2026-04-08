@@ -29,3 +29,6 @@ shopify.theme.toml
 
 # Logs
 *.log
+
+# Generated reports (HTML output – regenerate with `npm run report`)
+reports/sales-summary.html
