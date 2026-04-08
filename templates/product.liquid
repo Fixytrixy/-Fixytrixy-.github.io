@@ -296,6 +296,25 @@
     </div>
   </div>
 
+  <!-- Sticky Add to Cart bar (mobile) -->
+  {%- if current_variant.available -%}
+    <div class="sticky-atc" id="sticky-atc" aria-hidden="true">
+      <div class="sticky-atc__inner">
+        <div class="sticky-atc__info">
+          <div class="sticky-atc__title">{{ product.title | escape }}</div>
+          <div class="sticky-atc__price">{{ current_variant.price | money }}</div>
+        </div>
+        <button
+          type="button"
+          class="btn btn--primary sticky-atc__btn"
+          id="sticky-atc-btn"
+          aria-label="Lägg i varukorg – {{ product.title | escape }}">
+          Lägg i varukorg
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+
   <!-- Related Products -->
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
     <div class="related-products" id="related-products">
@@ -350,4 +369,36 @@
       }
     });
   });
+
+  // Sticky Add to Cart bar
+  (function() {
+    var stickyBar = document.getElementById('sticky-atc');
+    var stickyBtn = document.getElementById('sticky-atc-btn');
+    var mainBtn   = document.querySelector('.product-form__add-to-cart');
+    var mainForm  = document.querySelector('[data-type="add-to-cart-form"]');
+
+    if (!stickyBar || !stickyBtn || !mainBtn || !mainForm) return;
+
+    function updateStickyBar() {
+      var rect = mainBtn.getBoundingClientRect();
+      var isMainBtnVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (isMainBtnVisible) {
+        stickyBar.classList.remove('sticky-atc--visible');
+        stickyBar.setAttribute('aria-hidden', 'true');
+      } else {
+        stickyBar.classList.add('sticky-atc--visible');
+        stickyBar.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    window.addEventListener('scroll', updateStickyBar, { passive: true });
+    window.addEventListener('resize', updateStickyBar, { passive: true });
+    updateStickyBar();
+
+    // Clicking the sticky button submits the main product form
+    stickyBtn.addEventListener('click', function() {
+      var submitBtn = mainForm.querySelector('[name="add"]');
+      if (submitBtn) submitBtn.click();
+    });
+  })();
 </script>
