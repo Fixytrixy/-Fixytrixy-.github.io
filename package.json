@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Fixaotrixa – Shopify-tema och produktimporter för Sveriges bästa förvaringsbutik",
   "scripts": {
+    "test": "jest --coverage",
     "import": "node scripts/amazon-product-importer.js",
     "dev": "shopify theme dev --store=xivfqd-hz.myshopify.com",
     "push": "shopify theme push --store=xivfqd-hz.myshopify.com",
@@ -19,5 +20,9 @@
     "node": ">=18.0.0"
   },
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
 }

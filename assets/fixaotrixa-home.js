@@ -186,7 +186,7 @@
     if (typeof window.productVariants !== 'undefined') {
       var matched = window.productVariants.find(function (v) {
         return v.options.every(function (opt, i) {
-          return options['options[' + Object.keys(options)[i] + ']'] === opt;
+          return options[Object.keys(options)[i]] === opt;
         });
       });
       if (matched) {
