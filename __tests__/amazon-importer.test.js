@@ -353,8 +353,8 @@ describe('searchAmazonProducts', () => {
 
   it('includes an item with exactly the minimum rating and reviews', async () => {
     const borderItem = makeItem(
-      importer._MIN_RATING,
-      importer._MIN_REVIEWS
+      importer.MIN_RATING,
+      importer.MIN_REVIEWS
     );
     mockHttpsOk({ SearchResult: { Items: [borderItem] } });
     const result = await importer.searchAmazonProducts('test', '123');
@@ -566,19 +566,19 @@ describe('createProduct', () => {
 ════════════════════════════════════════════════════ */
 describe('module metadata', () => {
   it('exports exactly 6 categories', () => {
-    expect(importer._CATEGORIES).toHaveLength(6);
+    expect(importer.CATEGORIES).toHaveLength(6);
   });
 
   it('exports MIN_RATING of 4.0', () => {
-    expect(importer._MIN_RATING).toBe(4.0);
+    expect(importer.MIN_RATING).toBe(4.0);
   });
 
   it('exports MIN_REVIEWS of 50', () => {
-    expect(importer._MIN_REVIEWS).toBe(50);
+    expect(importer.MIN_REVIEWS).toBe(50);
   });
 
   it('every category has shopifyHandle, keywords, and amazonBrowseNode', () => {
-    importer._CATEGORIES.forEach(cat => {
+    importer.CATEGORIES.forEach(cat => {
       expect(cat).toHaveProperty('shopifyHandle');
       expect(cat).toHaveProperty('keywords');
       expect(cat).toHaveProperty('amazonBrowseNode');
@@ -586,7 +586,7 @@ describe('module metadata', () => {
   });
 
   it('all shopifyHandles are non-empty strings', () => {
-    importer._CATEGORIES.forEach(cat => {
+    importer.CATEGORIES.forEach(cat => {
       expect(typeof cat.shopifyHandle).toBe('string');
       expect(cat.shopifyHandle.length).toBeGreaterThan(0);
     });

@@ -324,7 +324,7 @@ module.exports = {
   shopifyRequest,
   ensureCollection,
   createProduct,
-  _CATEGORIES: CATEGORIES,
-  _MIN_RATING:  MIN_RATING,
-  _MIN_REVIEWS: MIN_REVIEWS
+  CATEGORIES,
+  MIN_RATING,
+  MIN_REVIEWS
 };
