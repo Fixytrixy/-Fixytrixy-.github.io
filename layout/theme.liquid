@@ -21,9 +21,26 @@
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
-    {% endif %}
+    {%- liquid
+      if page_description != blank
+        assign meta_description = page_description
+      elsif request.page_type == 'product'
+        assign meta_material   = product.metafields.custom.material   | default: ''
+        assign meta_dimensions = product.metafields.custom.dimensions | default: ''
+        assign meta_description = 'Shop ' | append: product.title | append: ' – '
+        if meta_material != blank and meta_dimensions != blank
+          assign meta_description = meta_description | append: meta_material | append: ', ' | append: meta_dimensions | append: '. '
+        elsif meta_material != blank
+          assign meta_description = meta_description | append: meta_material | append: '. '
+        elsif meta_dimensions != blank
+          assign meta_description = meta_description | append: meta_dimensions | append: '. '
+        endif
+        assign meta_description = meta_description | append: 'Perfect for organizing your home. Free delivery available.'
+      endif
+    -%}
+    {%- if meta_description != blank -%}
+      <meta name="description" content="{{ meta_description | escape }}">
+    {%- endif -%}
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ canonical_url }}">
