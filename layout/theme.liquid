@@ -24,7 +24,7 @@
     {%- liquid
       if page_description != blank
         assign meta_description = page_description
-      elsif request.page_type == 'product'
+      elsif request.page_type == 'product' and product != blank
         assign meta_material   = product.metafields.custom.material   | default: ''
         assign meta_dimensions = product.metafields.custom.dimensions | default: ''
         assign meta_description = 'Shop ' | append: product.title | append: ' – '
