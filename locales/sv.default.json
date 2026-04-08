@@ -1,5 +1,8 @@
 {
   "general": {
+    "breadcrumbs": {
+      "home": "Hem"
+    },
     "password_page": {
       "login_form_heading": "Ange butikslösenord",
       "login_form_password_label": "Lösenord",
