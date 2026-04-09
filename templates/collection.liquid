@@ -85,12 +85,38 @@
     </div>
   </div>
 
+  <!-- Room Filter -->
+  {%- assign room_filters = 'Kök,Sovrum,Garderob,Badrum,Garage,Kontor' | split: ',' -%}
+  {%- assign room_tags   = 'room-kitchen,room-bedroom,room-closet,room-bathroom,room-garage,room-office' | split: ',' -%}
+  {%- assign room_icons  = '🍳,🛏️,👗,🚿,🚗,💼' | split: ',' -%}
+  {%- assign active_room = request.param.tag | downcase -%}
+  <div class="room-filter" role="group" aria-label="Filtrera efter rum" id="room-filter">
+    <span class="room-filter__label">Rum:</span>
+    <button
+      class="room-filter__btn"
+      data-room=""
+      aria-pressed="{% if active_room == blank %}true{% else %}false{% endif %}">
+      Alla rum
+    </button>
+    {%- for room in room_filters -%}
+      {%- assign room_tag = room_tags[forloop.index0] -%}
+      <button
+        class="room-filter__btn"
+        data-room="{{ room_tag }}"
+        aria-pressed="{% if active_room == room_tag %}true{% else %}false{% endif %}">
+        <span class="room-filter__icon" aria-hidden="true">{{ room_icons[forloop.index0] }}</span>
+        {{ room }}
+      </button>
+    {%- endfor -%}
+  </div>
+
   <!-- Products Grid -->
   <div class="collection-page__grid">
     {%- if collection.products.size > 0 -%}
-      <ul class="product-grid" role="list">
+      <ul class="product-grid" role="list" id="product-grid">
         {%- for product in collection.products -%}
-          <li class="product-grid__item">
+          {%- assign product_tags_lower = product.tags | join: ',' | downcase -%}
+          <li class="product-grid__item" data-tags="{{ product_tags_lower }}">
             <article class="product-card" itemscope itemtype="https://schema.org/Product">
               <a href="{{ product.url | within: collection }}" class="product-card__link" aria-label="{{ product.title }}">
                 <div class="product-card__media">
@@ -109,6 +135,12 @@
                       itemprop="image">
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+                  {%- endif -%}
+
+                  {%- if product.tags contains 'best-seller' -%}
+                    <span class="product-card__badge product-card__badge--best-seller" aria-label="Mest populär">
+                      ⭐ Mest populär
+                    </span>
                   {%- endif -%}
 
                   {%- if product.compare_at_price > product.price -%}
@@ -175,6 +207,9 @@
           </li>
         {%- endfor -%}
       </ul>
+      <p class="collection-page__no-results" id="room-filter-no-results" aria-live="polite">
+        Inga produkter hittades för det valda rummet.
+      </p>
 
       <!-- Pagination -->
       {%- if paginate.pages > 1 -%}

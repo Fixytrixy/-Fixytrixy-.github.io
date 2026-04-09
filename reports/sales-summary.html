@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fixaotrixa – Försäljningsanalys (senaste 30 dagarna)</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #212121;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    a { color: #1565c0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+    header { margin-bottom: 32px; }
+    header h1 { font-size: 1.75rem; font-weight: 700; color: #2e7d32; }
+    header p  { color: #555; font-size: 0.9rem; margin-top: 4px; }
+    .meta     { display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .badge--live { background: #e8f5e9; color: #2e7d32; }
+    .badge--demo { background: #fff3e0; color: #e65100; }
+
+    /* ── API note ── */
+    .api-note {
+      background: #fff8e1; border-left: 4px solid #f9a825;
+      padding: 12px 16px; border-radius: 4px; margin-bottom: 24px;
+      font-size: 0.88rem; line-height: 1.7;
+    }
+    .api-note code { background: #f5f5f5; padding: 1px 5px; border-radius: 3px; }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: #fff; border-radius: 10px;
+      padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .kpi-card__label { font-size: 0.8rem; color: #777; text-transform: uppercase; letter-spacing: .5px; }
+    .kpi-card__value { font-size: 1.8rem; font-weight: 700; color: #2e7d32; margin-top: 4px; }
+    .kpi-card__sub   { font-size: 0.8rem; color: #999; margin-top: 2px; }
+
+    /* ── Section cards ── */
+    .section {
+      background: #fff; border-radius: 10px;
+      padding: 24px; margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .section h2 {
+      font-size: 1.1rem; font-weight: 600; margin-bottom: 16px;
+      padding-bottom: 10px; border-bottom: 2px solid #f0f2f5;
+    }
+    .section h2 .icon { margin-right: 6px; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; }
+    th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .5px;
+         color: #777; background: #fafafa; }
+    tr:not(:last-child) td { border-bottom: 1px solid #f0f2f5; }
+    tr:hover td { background: #fafafa; }
+    td.num  { text-align: right; font-variant-numeric: tabular-nums; }
+    td.rank { color: #bbb; font-weight: 600; width: 36px; }
+    td.dead { color: #c62828; }
+
+    /* ── Rate badges ── */
+    .rate { display: inline-block; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; }
+    .rate--good { background: #e8f5e9; color: #2e7d32; }
+    .rate--warn  { background: #fff3e0; color: #e65100; }
+    .rate--bad   { background: #ffebee; color: #c62828; }
+
+    /* ── AOV bar chart ── */
+    .bar-chart { display: flex; flex-direction: column; gap: 14px; }
+    .bar-group {}
+    .bar-label { font-size: 0.82rem; color: #555; margin-bottom: 4px; }
+    .bar-track  {
+      display: flex; align-items: center; gap: 10px;
+      background: #f0f2f5; border-radius: 6px; overflow: hidden; height: 28px;
+    }
+    .bar-fill   { background: #2e7d32; height: 100%; border-radius: 6px; transition: width .3s; }
+    .bar-value  { font-size: 0.85rem; font-weight: 600; white-space: nowrap; padding-right: 8px; }
+    .bar-sub    { font-size: 0.78rem; color: #999; margin-top: 2px; }
+
+    /* ── Deadstock alert ── */
+    .dead-count {
+      display: inline-block; background: #ffebee; color: #c62828;
+      font-weight: 700; padding: 3px 10px; border-radius: 10px; font-size: 0.85rem;
+      margin-left: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .kpi-card__value { font-size: 1.4rem; }
+      th, td { padding: 8px; font-size: 0.82rem; }
+    }
+
+    .no-data { color: #999; font-style: italic; padding: 16px 0; }
+    footer { text-align: center; color: #aaa; font-size: 0.8rem; margin-top: 48px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>📊 Fixaotrixa – Försäljningsanalys</h1>
+    <div class="meta">
+      <span class="badge badge--demo">◌ Exempeldata (scaffold)</span>
+      <p>Senaste 30 dagarna &nbsp;·&nbsp; Genererad: 2026-04-08 23:55:17</p>
+    </div>
+  </header>
+
+  
+  <div class="api-note">
+    <strong>📡 API-uppkoppling saknas.</strong>
+    Sätt <code>SHOPIFY_STORE_URL</code> och <code>SHOPIFY_ACCESS_TOKEN</code> i din
+    <code>.env</code>-fil och kör <code>npm run report</code> igen för live-data.
+    Se kommentarerna i <code>scripts/generate-sales-report.js</code> för en fullständig
+    lista över vilka Admin API-endpoints som används.
+  </div>
+
+  <!-- KPI Summary -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-card__label">Total omsättning</div>
+      <div class="kpi-card__value">347 600 kr</div>
+      <div class="kpi-card__sub">senaste 30 dagarna</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Antal order</div>
+      <div class="kpi-card__value">472</div>
+      <div class="kpi-card__sub">senaste 30 dagarna</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Genomsnittligt ordervärde</div>
+      <div class="kpi-card__value">736 kr</div>
+      <div class="kpi-card__sub">AOV (snitt)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Deadstock-produkter</div>
+      <div class="kpi-card__value" style="color:#c62828">5</div>
+      <div class="kpi-card__sub">0 sålda senaste 30 dgr</div>
+    </div>
+  </div>
+
+  <!-- Top 10 Products -->
+  <div class="section">
+    <h2><span class="icon">🏆</span>Topp 10 produkter efter omsättning</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Produkt</th>
+          <th style="text-align:right">Omsättning (30 dgr)</th>
+        </tr>
+      </thead>
+      <tbody><tr><td class="rank">1</td><td><a href="https://din-butik.myshopify.com/products/kallax-4x4" target="_blank" rel="noopener">KALLAX Hyllsystem 4×4 – IKEA</a></td><td class="num">48 200 kr</td></tr><tr><td class="rank">2</td><td><a href="https://din-butik.myshopify.com/products/bamboo-box-lid" target="_blank" rel="noopener">Förvaringslåda med lock, bamboo</a></td><td class="num">31 750 kr</td></tr><tr><td class="rank">3</td><td><a href="https://din-butik.myshopify.com/products/shoe-rack-3tier" target="_blank" rel="noopener">Skohylla, 3-plan vit stål</a></td><td class="num">28 400 kr</td></tr><tr><td class="rank">4</td><td><a href="https://din-butik.myshopify.com/products/kitchen-turntable" target="_blank" rel="noopener">Köksorganizer, roterande bambu</a></td><td class="num">22 100 kr</td></tr><tr><td class="rank">5</td><td><a href="https://din-butik.myshopify.com/products/wardrobe-organizer" target="_blank" rel="noopener">Garderobsorganizer med dragkedjor</a></td><td class="num">19 850 kr</td></tr><tr><td class="rank">6</td><td><a href="https://din-butik.myshopify.com/products/shower-rack-3tier" target="_blank" rel="noopener">Duschhylla rostfritt stål 3-plan</a></td><td class="num">17 600 kr</td></tr><tr><td class="rank">7</td><td><a href="https://din-butik.myshopify.com/products/desk-organizer-7" target="_blank" rel="noopener">Skrivbordsorganizer – 7 fack</a></td><td class="num">14 900 kr</td></tr><tr><td class="rank">8</td><td><a href="https://din-butik.myshopify.com/products/hallway-hooks" target="_blank" rel="noopener">Hallmöbel med 8 krokar &amp; hylla</a></td><td class="num">13 250 kr</td></tr><tr><td class="rank">9</td><td><a href="https://din-butik.myshopify.com/products/foldable-basket-3" target="_blank" rel="noopener">Foldbar förvaringskorg, set om 3</a></td><td class="num">11 400 kr</td></tr><tr><td class="rank">10</td><td><a href="https://din-butik.myshopify.com/products/outdoor-box-120l" target="_blank" rel="noopener">Utomhusbox, vädertålig 120 L</a></td><td class="num">9 800 kr</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Conversion Rate per Collection -->
+  <div class="section">
+    <h2><span class="icon">🛒</span>Konverteringsfrekvens per kollektion</h2>
+    <p style="font-size:.82rem;color:#777;margin-bottom:12px">
+      Proxy-mått: order per kollektion ÷ antal produkter i kollektionen.
+      För sessionsbaserad konvertering behövs Shopify Analytics API (Plus) eller GA4 Data API.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Kollektion</th>
+          <th style="text-align:right">Order (30 dgr)</th>
+          <th style="text-align:right">Produkter</th>
+          <th style="text-align:right">Konv.-frekvens</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>Köksförvaring</td><td class="num">124</td><td class="num">38</td><td class="num"><span class="rate rate--good">3.3%</span></td></tr><tr><td>Sovrumsförvaring</td><td class="num">98</td><td class="num">31</td><td class="num"><span class="rate rate--good">3.2%</span></td></tr><tr><td>Badrumsförvaring</td><td class="num">76</td><td class="num">24</td><td class="num"><span class="rate rate--good">3.2%</span></td></tr><tr><td>Hallförvaring</td><td class="num">61</td><td class="num">22</td><td class="num"><span class="rate rate--warn">2.8%</span></td></tr><tr><td>Kontorsförvaring</td><td class="num">49</td><td class="num">20</td><td class="num"><span class="rate rate--warn">2.5%</span></td></tr><tr><td>Trädgårdsförvaring</td><td class="num">31</td><td class="num">17</td><td class="num"><span class="rate rate--bad">1.8%</span></td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- AOV Trend -->
+  <div class="section">
+    <h2><span class="icon">📈</span>AOV-trend (veckovis, senaste 4 veckorna)</h2>
+    <div class="bar-chart"><div class="bar-group"><div class="bar-label">18 mars (v3)</div><div class="bar-track"><div class="bar-fill" style="width:91%"></div><span class="bar-value">382 kr</span></div><div class="bar-sub">9 order</div></div><div class="bar-group"><div class="bar-label">25 mars (v4)</div><div class="bar-track"><div class="bar-fill" style="width:90%"></div><span class="bar-value">378 kr</span></div><div class="bar-sub">14 order</div></div><div class="bar-group"><div class="bar-label">1 apr. (v1)</div><div class="bar-track"><div class="bar-fill" style="width:96%"></div><span class="bar-value">401 kr</span></div><div class="bar-sub">20 order</div></div><div class="bar-group"><div class="bar-label">8 apr. (v2)</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div><span class="bar-value">419 kr</span></div><div class="bar-sub">19 order</div></div></div>
+  </div>
+
+  <!-- Deadstock Alert -->
+  <div class="section">
+    <h2>
+      <span class="icon">⚠️</span>Deadstock-varning
+      <span class="dead-count">5 produkter</span>
+    </h2>
+    <p style="font-size:.82rem;color:#777;margin-bottom:12px">
+      Produkter utan en enda försäljning de senaste 30 dagarna.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Produkt</th>
+          <th>Produkttyp</th>
+          <th style="text-align:right">Omsättning (30 dgr)</th>
+        </tr>
+      </thead>
+      <tbody><tr><td><a href="https://din-butik.myshopify.com/products/underbed-bag-2" target="_blank" rel="noopener">Underbed Storage Bag, set om 2</a></td><td>Sovrumsförvaring</td><td class="num dead">0 kr</td></tr><tr><td><a href="https://din-butik.myshopify.com/products/spice-rack-mag" target="_blank" rel="noopener">Magnetisk kryddhylla, 6 burkar</a></td><td>Köksförvaring</td><td class="num dead">0 kr</td></tr><tr><td><a href="https://din-butik.myshopify.com/products/plastic-box-45l" target="_blank" rel="noopener">Plastlåda stapelbar 45 L</a></td><td>Allmän förvaring</td><td class="num dead">0 kr</td></tr><tr><td><a href="https://din-butik.myshopify.com/products/vacuum-bags-6" target="_blank" rel="noopener">Vakuumpåsar för kläder, 6-pack</a></td><td>Sovrumsförvaring</td><td class="num dead">0 kr</td></tr><tr><td><a href="https://din-butik.myshopify.com/products/pegboard-60x90" target="_blank" rel="noopener">Verktygstavla pegboard 60×90 cm</a></td><td>Garagförvaring</td><td class="num dead">0 kr</td></tr></tbody>
+    </table>
+  </div>
+
+  <footer>
+    Fixaotrixa Admin Dashboard &nbsp;·&nbsp;
+    Genererad av <code>scripts/generate-sales-report.js</code> &nbsp;·&nbsp;
+    2026-04-08 23:55:17
+  </footer>
+</div>
+</body>
+</html>

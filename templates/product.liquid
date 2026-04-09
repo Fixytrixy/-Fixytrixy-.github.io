@@ -7,81 +7,6 @@
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 {%- assign product_form_id = 'product-form-' | append: product.id -%}
 
-<!-- Schema.org Product structured data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": {{ product.title | json }},
-  "description": {{ product.description | strip_html | truncate: 500 | json }},
-  "image": [
-    {%- for image in product.images limit: 5 -%}
-      {{ image | image_url: width: 800 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
-    {%- endfor -%}
-  ],
-  "brand": {
-    "@type": "Brand",
-    "name": {{ product.vendor | json }}
-  },
-  "sku": {{ current_variant.sku | json }},
-  "offers": {
-    "@type": "Offer",
-    "url": {{ request.origin | append: product.url | json }},
-    "priceCurrency": {{ cart.currency.iso_code | json }},
-    "price": {{ current_variant.price | divided_by: 100.0 | json }},
-    "availability": {% if current_variant.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %},
-    "seller": {
-      "@type": "Organization",
-      "name": {{ shop.name | json }}
-    }
-  }
-  {%- if product.metafields.reviews.rating -%}
-  ,
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": {{ product.metafields.reviews.rating.value.rating | json }},
-    "reviewCount": {{ product.metafields.reviews.rating_count | json }}
-  }
-  {%- endif -%}
-}
-</script>
-
-<!-- BreadcrumbList structured data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Hem",
-      "item": {{ request.origin | json }}
-    },
-    {%- if collection -%}
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": {{ collection.title | json }},
-      "item": {{ request.origin | append: collection.url | json }}
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": {{ product.title | json }},
-      "item": {{ request.origin | append: product.url | json }}
-    }
-    {%- else -%}
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": {{ product.title | json }},
-      "item": {{ request.origin | append: product.url | json }}
-    }
-    {%- endif -%}
-  ]
-}
-</script>
 
 <div class="product-page page-width">
   <!-- Breadcrumbs -->
@@ -149,6 +74,12 @@
       {%- endif -%}
 
       <h1 class="product-page__title">{{ product.title }}</h1>
+
+      {%- if product.tags contains 'best-seller' -%}
+        <span class="product-page__badge product-page__badge--best-seller">
+          ⭐ Mest populär
+        </span>
+      {%- endif -%}
 
       <!-- Ratings -->
       {%- if product.metafields.reviews.rating -%}
@@ -296,6 +227,25 @@
     </div>
   </div>
 
+  <!-- Sticky Add to Cart bar (mobile) -->
+  {%- if current_variant.available -%}
+    <div class="sticky-atc" id="sticky-atc" aria-hidden="true">
+      <div class="sticky-atc__inner">
+        <div class="sticky-atc__info">
+          <div class="sticky-atc__title">{{ product.title | escape }}</div>
+          <div class="sticky-atc__price">{{ current_variant.price | money }}</div>
+        </div>
+        <button
+          type="button"
+          class="btn btn--primary sticky-atc__btn"
+          id="sticky-atc-btn"
+          aria-label="Lägg i varukorg – {{ product.title | escape }}">
+          Lägg i varukorg
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+
   <!-- Related Products -->
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
     <div class="related-products" id="related-products">
@@ -350,4 +300,36 @@
       }
     });
   });
+
+  // Sticky Add to Cart bar
+  (function() {
+    var stickyBar = document.getElementById('sticky-atc');
+    var stickyBtn = document.getElementById('sticky-atc-btn');
+    var mainBtn   = document.querySelector('.product-form__add-to-cart');
+    var mainForm  = document.querySelector('[data-type="add-to-cart-form"]');
+
+    if (!stickyBar || !stickyBtn || !mainBtn || !mainForm) return;
+
+    function updateStickyBar() {
+      var rect = mainBtn.getBoundingClientRect();
+      var isMainBtnVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (isMainBtnVisible) {
+        stickyBar.classList.remove('sticky-atc--visible');
+        stickyBar.setAttribute('aria-hidden', 'true');
+      } else {
+        stickyBar.classList.add('sticky-atc--visible');
+        stickyBar.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    window.addEventListener('scroll', updateStickyBar, { passive: true });
+    window.addEventListener('resize', updateStickyBar, { passive: true });
+    updateStickyBar();
+
+    // Clicking the sticky button submits the main product form
+    stickyBtn.addEventListener('click', function() {
+      var submitBtn = mainForm.querySelector('[name="add"]');
+      if (submitBtn) submitBtn.click();
+    });
+  })();
 </script>

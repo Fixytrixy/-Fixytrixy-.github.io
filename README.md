@@ -180,6 +180,47 @@ Betallösningar:   Klarna, Swish, Visa/Mastercard
 7. Aktivera Klaviyo och konfigurera e-postflöden
 8. Kör SEO-checklistan innan lansering
 9. Skicka sitemap till Google Search Console
+10. Generera försäljningsrapporten: `npm run report` → öppna `reports/sales-summary.html`
+
+---
+
+## 📊 Försäljningsanalysdashboard
+
+Rapporten `reports/sales-summary.html` innehåller en admin-facing försäljningsanalys med:
+
+| Sektion | Beskrivning |
+|---------|-------------|
+| **Topp 10 produkter** | Produkter sorterade efter omsättning de senaste 30 dagarna |
+| **Konverteringsfrekvens** | Order per kollektion (proxy; sessioner kräver Analytics API) |
+| **Deadstock-varning** | Produkter utan en enda försäljning de senaste 30 dagarna |
+| **AOV-trend** | Genomsnittligt ordervärde vecka för vecka |
+
+### Generera rapporten
+
+```bash
+# Med exempeldata (scaffold – inget API behövs):
+npm run report
+
+# Med live-data från Shopify (kräver .env med giltiga nycklar):
+# Se .env.example för vilka variabler som behövs
+npm run report
+```
+
+Rapporten sparas i `reports/sales-summary.html` och kan öppnas direkt i webbläsaren.
+
+### Shopify Admin API-endpoints
+
+| Endpoint | Syfte |
+|----------|-------|
+| `GET /admin/api/2024-01/orders.json?status=any&created_at_min=<ISO>&limit=250&fields=id,created_at,total_price,line_items` | Hämtar alla order (senaste 30 dagar) |
+| `GET /admin/api/2024-01/products.json?limit=250&fields=id,title,handle,variants,product_type` | Hämtar alla produkter (för deadstock-analys) |
+| `GET /admin/api/2024-01/custom_collections.json?limit=250&fields=id,title,handle` | Hämtar manuella kollektioner |
+| `GET /admin/api/2024-01/smart_collections.json?limit=250&fields=id,title,handle` | Hämtar smarta kollektioner |
+| `GET /admin/api/2024-01/collects.json?collection_id=<id>&limit=250` | Kopplar produkter till kollektioner |
+
+> **Konverteringsfrekvens (sessioner):** Shopify Admin REST API exponerar inte sessionsdata.
+> Fullständig sessions-till-order-konvertering kräver antingen **Shopify Analytics API** (Plus-plan)
+> eller **Google Analytics 4 Data API**. Scriptet använder `order/produkter`-kvoten som approximation.
 
 ---
 
@@ -192,8 +233,12 @@ Betallösningar:   Klarna, Swish, Visa/Mastercard
 │   └── quiz.js
 ├── layout/
 │   └── theme.liquid
+├── reports/
+│   └── sales-summary.html        ← genereras av scripts/generate-sales-report.js
+├── scripts/
+│   ├── amazon-product-importer.js
+│   └── generate-sales-report.js  ← försäljningsanalys-generator
 ├── sections/
-│   ├── fixaotrixa-home.liquid
 │   ├── hero-banner.liquid
 │   ├── category-grid.liquid
 │   ├── quiz-section.liquid
@@ -203,8 +248,6 @@ Betallösningar:   Klarna, Swish, Visa/Mastercard
 │   ├── index.json
 │   ├── product.liquid
 │   └── collection.liquid
-├── scripts/
-│   └── amazon-product-importer.js
 ├── .env.example
 └── README.md
 ```
