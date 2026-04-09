@@ -4,6 +4,7 @@
   "description": "Fixaotrixa – Shopify-tema och produktimporter för Sveriges bästa förvaringsbutik",
   "scripts": {
     "import": "node scripts/amazon-product-importer.js",
+    "report": "node scripts/generate-sales-report.js",
     "dev": "shopify theme dev --store=xivfqd-hz.myshopify.com",
     "push": "shopify theme push --store=xivfqd-hz.myshopify.com",
     "pull": "shopify theme pull --store=xivfqd-hz.myshopify.com"
