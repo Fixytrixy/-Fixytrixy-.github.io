@@ -50,6 +50,10 @@
 
     {% render 'meta-tags' %}
 
+    {%- if request.page_type == 'product' -%}
+      {%- render 'product-structured-data' -%}
+    {%- endif -%}
+
     {{ content_for_header }}
 
     {%- liquid
