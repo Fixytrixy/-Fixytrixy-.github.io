@@ -137,6 +137,12 @@
                     {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
                   {%- endif -%}
 
+                  {%- if product.tags contains 'best-seller' -%}
+                    <span class="product-card__badge product-card__badge--best-seller" aria-label="Mest populär">
+                      ⭐ Mest populär
+                    </span>
+                  {%- endif -%}
+
                   {%- if product.compare_at_price > product.price -%}
                     <span class="product-card__badge product-card__badge--sale" aria-label="Rea">
                       Rea

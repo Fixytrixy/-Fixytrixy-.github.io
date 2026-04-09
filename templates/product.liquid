@@ -75,6 +75,12 @@
 
       <h1 class="product-page__title">{{ product.title }}</h1>
 
+      {%- if product.tags contains 'best-seller' -%}
+        <span class="product-page__badge product-page__badge--best-seller">
+          ⭐ Mest populär
+        </span>
+      {%- endif -%}
+
       <!-- Ratings -->
       {%- if product.metafields.reviews.rating -%}
         <div class="product-page__rating" aria-label="{{ product.metafields.reviews.rating.value.rating }} av 5 stjärnor">
