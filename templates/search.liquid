@@ -1,0 +1,423 @@
+<div class="search-page">
+  <div class="container">
+    <div class="search-header">
+      <h1>Sökresultat</h1>
+      <form action="{{ routes.search_url }}" method="get" class="search-form">
+        <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Sök produkter..." required>
+        <button type="submit">Sök</button>
+      </form>
+      {%- if search.terms -%}
+        <p class="search-results-count">
+          {%- if search.results_count == 0 -%}
+            Inga resultat för "{{ search.terms }}"
+          {%- else -%}
+            {{ search.results_count }} resultat för "{{ search.terms }}"
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- if search.results_count > 0 -%}
+      <div class="search-filters">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">Alla ({{ search.results_count }})</button>
+          {%- assign product_count = 0 -%}
+          {%- assign article_count = 0 -%}
+          {%- assign page_count = 0 -%}
+          {%- for result in search.results -%}
+            {%- if result.object_type == 'product' -%}
+              {%- assign product_count = product_count | plus: 1 -%}
+            {%- elsif result.object_type == 'article' -%}
+              {%- assign article_count = article_count | plus: 1 -%}
+            {%- elsif result.object_type == 'page' -%}
+              {%- assign page_count = page_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if product_count > 0 -%}
+            <button class="filter-tab" data-filter="products">Produkter ({{ product_count }})</button>
+          {%- endif -%}
+          {%- if article_count > 0 -%}
+            <button class="filter-tab" data-filter="articles">Artiklar ({{ article_count }})</button>
+          {%- endif -%}
+          {%- if page_count > 0 -%}
+            <button class="filter-tab" data-filter="pages">Sidor ({{ page_count }})</button>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="search-results">
+        {%- for result in search.results -%}
+          <div class="search-result-item" data-type="{{ result.object_type }}">
+            {%- if result.object_type == 'product' -%}
+              <div class="product-result">
+                <div class="result-image">
+                  <a href="{{ result.url }}">
+                    <img src="{{ result.featured_image | image_url: width: 150, height: 150, crop: 'center' }}" alt="{{ result.title }}" width="150" height="150">
+                  </a>
+                </div>
+                <div class="result-content">
+                  <h3><a href="{{ result.url }}">{{ result.title }}</a></h3>
+                  <div class="result-price">{{ result.price | money }}</div>
+                  <p class="result-description">{{ result.content | strip_html | truncate: 150 }}</p>
+                  <div class="result-meta">
+                    <span class="result-type">Produkt</span>
+                    {%- if result.vendor -%}
+                      <span class="result-vendor">{{ result.vendor }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            {%- elsif result.object_type == 'article' -%}
+              <div class="article-result">
+                <div class="result-content">
+                  <h3><a href="{{ result.url }}">{{ result.title }}</a></h3>
+                  <p class="result-description">{{ result.content | strip_html | truncate: 200 }}</p>
+                  <div class="result-meta">
+                    <span class="result-type">Artikel</span>
+                    <span class="result-date">{{ result.published_at | date: '%d %B %Y' }}</span>
+                    {%- if result.author -%}
+                      <span class="result-author">av {{ result.author }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            {%- elsif result.object_type == 'page' -%}
+              <div class="page-result">
+                <div class="result-content">
+                  <h3><a href="{{ result.url }}">{{ result.title }}</a></h3>
+                  <p class="result-description">{{ result.content | strip_html | truncate: 200 }}</p>
+                  <div class="result-meta">
+                    <span class="result-type">Sida</span>
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+    {%- else -%}
+      <div class="no-results">
+        <h2>Inga resultat hittades</h2>
+        <p>Prova att söka med andra sökord eller bläddra igenom våra kategorier:</p>
+        <div class="suggested-categories">
+          {%- for collection in collections -%}
+            <a href="{{ collection.url }}" class="category-link">{{ collection.title }}</a>
+          {%- endfor -%}
+        </div>
+        <div class="popular-searches">
+          <h3>Populära sökningar:</h3>
+          <div class="search-tags">
+            <a href="{{ routes.search_url }}?q=kök" class="search-tag">kök</a>
+            <a href="{{ routes.search_url }}?q=sovrum" class="search-tag">sovrum</a>
+            <a href="{{ routes.search_url }}?q=badrum" class="search-tag">badrum</a>
+            <a href="{{ routes.search_url }}?q=förvaring" class="search-tag">förvaring</a>
+            <a href="{{ routes.search_url }}?q=organisering" class="search-tag">organisering</a>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+.search-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.search-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-form input {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 25px 0 0 25px;
+  font-size: 1.1rem;
+}
+
+.search-form button {
+  padding: 1rem 2rem;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border: none;
+  border-radius: 0 25px 25px 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.search-form button:hover {
+  background-color: #45a049;
+}
+
+.search-results-count {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.search-filters {
+  margin-bottom: 2rem;
+}
+
+.filter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filter-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+}
+
+.filter-tab.active, .filter-tab:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border-color: {{ settings.color_primary }};
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.search-result-item {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.search-result-item:hover {
+  transform: translateY(-2px);
+}
+
+.product-result {
+  display: flex;
+  gap: 2rem;
+}
+
+.result-image {
+  flex: 0 0 150px;
+}
+
+.result-image img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.result-content {
+  flex: 1;
+}
+
+.result-content h3 {
+  margin-bottom: 0.5rem;
+}
+
+.result-content h3 a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.3rem;
+  transition: color 0.3s;
+}
+
+.result-content h3 a:hover {
+  color: {{ settings.color_primary }};
+}
+
+.result-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: {{ settings.color_primary }};
+  margin-bottom: 0.5rem;
+}
+
+.result-description {
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.result-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.result-type {
+  background-color: #f0f0f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.article-result .result-content h3 a {
+  font-size: 1.2rem;
+}
+
+.page-result .result-content h3 a {
+  font-size: 1.2rem;
+}
+
+.search-pagination {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.no-results h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.suggested-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.category-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #f9f9f9;
+  color: #333;
+  text-decoration: none;
+  border-radius: 25px;
+  transition: all 0.3s;
+}
+
+.category-link:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.popular-searches h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.search-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #e0e0e0;
+  color: #333;
+  text-decoration: none;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.search-tag:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .product-result {
+    flex-direction: column;
+  }
+
+  .result-image {
+    flex: none;
+    align-self: center;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+  }
+
+  .suggested-categories {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Filter tabs functionality
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const resultItems = document.querySelectorAll('.search-result-item');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      const filter = this.getAttribute('data-filter');
+
+      // Update active tab
+      filterTabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      // Filter results
+      resultItems.forEach(item => {
+        if (filter === 'all' || item.getAttribute('data-type') + 's' === filter) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Highlight search terms in results
+  {%- if search.terms -%}
+    const searchTerms = "{{ search.terms }}".toLowerCase().split(' ');
+    const resultDescriptions = document.querySelectorAll('.result-description');
+
+    resultDescriptions.forEach(desc => {
+      let html = desc.innerHTML;
+      searchTerms.forEach(term => {
+        if (term.length > 2) {
+          const regex = new RegExp(`(${term})`, 'gi');
+          html = html.replace(regex, '<mark>$1</mark>');
+        }
+      });
+      desc.innerHTML = html;
+    });
+  {%- endif -%}
+});
+</script>

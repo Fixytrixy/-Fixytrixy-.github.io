@@ -1,0 +1,608 @@
+<div class="cart-page">
+  <div class="container">
+    <h1>Din kundvagn</h1>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-content">
+        <div class="cart-items">
+          {%- for item in cart.items -%}
+            <div class="cart-item" data-key="{{ item.key }}">
+              <div class="item-image">
+                <a href="{{ item.url }}">
+                  <img src="{{ item.image | image_url: width: 150, height: 150, crop: 'center' }}" alt="{{ item.title }}" width="150" height="150">
+                </a>
+              </div>
+
+              <div class="item-details">
+                <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                <div class="item-properties">
+                  {%- for property in item.properties -%}
+                    {%- unless property.last == blank -%}
+                      <span class="property">{{ property.first }}: {{ property.last }}</span>
+                    {%- endunless -%}
+                  {%- endfor -%}
+                </div>
+                <div class="item-price">
+                  {%- if item.original_price != item.final_price -%}
+                    <span class="original-price">{{ item.original_price | money }}</span>
+                  {%- endif -%}
+                  <span class="final-price">{{ item.final_price | money }}</span>
+                </div>
+              </div>
+
+              <div class="item-quantity">
+                <form action="{{ routes.cart_change_url }}" method="post" class="quantity-form">
+                  <input type="hidden" name="id" value="{{ item.key }}">
+                  <button type="submit" name="minus" value="1" class="quantity-btn minus">-</button>
+                  <input type="number" name="quantity" value="{{ item.quantity }}" min="0" class="quantity-input">
+                  <button type="submit" name="plus" value="1" class="quantity-btn plus">+</button>
+                </form>
+              </div>
+
+              <div class="item-total">
+                <span>{{ item.final_line_price | money }}</span>
+              </div>
+
+              <div class="item-remove">
+                <form action="{{ routes.cart_change_url }}" method="post">
+                  <input type="hidden" name="id" value="{{ item.key }}">
+                  <button type="submit" name="quantity" value="0" class="remove-btn" title="Ta bort">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="cart-sidebar">
+          <div class="cart-summary">
+            <h2>Sammanfattning</h2>
+
+            <div class="summary-row">
+              <span>Delsumma:</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+
+            {%- if cart.total_discount > 0 -%}
+              <div class="summary-row discount">
+                <span>Rabatt:</span>
+                <span>-{{ cart.total_discount | money }}</span>
+              </div>
+            {%- endif -%}
+
+            <div class="summary-row total">
+              <span><strong>Totalt:</strong></span>
+              <span><strong>{{ cart.total_price | money }}</strong></span>
+            </div>
+
+            <div class="shipping-notice">
+              <p>Frakt beräknas i kassan</p>
+              <p>Fri frakt över 499 SEK</p>
+            </div>
+
+            <div class="cart-actions">
+              <a href="{{ routes.checkout_url }}" class="checkout-btn">Till kassan</a>
+              <a href="{{ routes.all_products_collection_url }}" class="continue-shopping">Fortsätt handla</a>
+            </div>
+          </div>
+
+          <div class="cart-discount">
+            <form action="{{ routes.cart_url }}" method="post" class="discount-form">
+              <label for="discount-code">Rabattkod:</label>
+              <div class="discount-input-group">
+                <input type="text" name="discount" id="discount-code" placeholder="Ange kod">
+                <button type="submit" class="apply-discount-btn">Tillämpa</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="cart-trust">
+            <div class="trust-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+              </svg>
+              <span>Säker betalning</span>
+            </div>
+            <div class="trust-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 7h-4V4c0-1.1-.9-2-2-2H10c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4z"/>
+              </svg>
+              <span>30 dagar öppet köp</span>
+            </div>
+            <div class="trust-item">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span>4.8/5 kundbetyg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-recommendations">
+        <h2>Du kanske också gillar</h2>
+        <div class="recommended-products">
+          {%- for product in collections.all.products limit: 4 -%}
+            {%- unless cart.items contains product -%}
+              <div class="recommended-product">
+                <a href="{{ product.url }}">
+                  <img src="{{ product.featured_image | image_url: width: 200, height: 200, crop: 'center' }}" alt="{{ product.title }}" width="200" height="200">
+                  <h4>{{ product.title }}</h4>
+                  <span class="price">{{ product.price | money }}</span>
+                </a>
+                <form action="{{ routes.cart_add_url }}" method="post" class="quick-add">
+                  <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                  <button type="submit">Lägg till</button>
+                </form>
+              </div>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- else -%}
+      <div class="empty-cart">
+        <div class="empty-cart-icon">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 4V2C7 1.45 7.45 1 8 1h8c.55 0 1 .45 1 1v2h5c.55 0 1 .45 1 1s-.45 1-1 1h-1v13c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V6H2c-.55 0-1-.45-1-1s.45-1 1-1h5zM9 3v1h6V3H9z"/>
+          </svg>
+        </div>
+        <h2>Din kundvagn är tom</h2>
+        <p>Upptäck våra fantastiska förvaringsprodukter och gör ditt hem mer organiserat!</p>
+        <a href="{{ routes.all_products_collection_url }}" class="shop-now-btn">Börja handla</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+.cart-page {
+  padding: 2rem 0;
+}
+
+.cart-page h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.cart-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 3rem;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 150px 1fr auto auto auto;
+  gap: 2rem;
+  align-items: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.item-image img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item-details h3 {
+  margin-bottom: 0.5rem;
+}
+
+.item-details h3 a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.item-details h3 a:hover {
+  color: {{ settings.color_primary }};
+}
+
+.item-properties {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.property {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.item-price {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 0.5rem;
+}
+
+.final-price {
+  color: {{ settings.color_primary }};
+}
+
+.item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.quantity-input {
+  width: 60px;
+  text-align: center;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.item-total {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: {{ settings.color_primary }};
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.remove-btn:hover {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+.cart-sidebar {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.cart-summary h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.summary-row.total {
+  border-bottom: 2px solid {{ settings.color_primary }};
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.discount {
+  color: #e74c3c;
+}
+
+.shipping-notice {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cart-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.checkout-btn {
+  display: block;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.checkout-btn:hover {
+  background-color: #45a049;
+}
+
+.continue-shopping {
+  display: block;
+  text-align: center;
+  padding: 1rem;
+  text-decoration: none;
+  color: {{ settings.color_primary }};
+  border: 2px solid {{ settings.color_primary }};
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.continue-shopping:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.cart-discount {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.discount-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.discount-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.discount-input-group input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.apply-discount-btn {
+  padding: 0.75rem 1rem;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.apply-discount-btn:hover {
+  background-color: #45a049;
+}
+
+.cart-trust {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.trust-item svg {
+  color: {{ settings.color_primary }};
+}
+
+.cart-recommendations {
+  margin-top: 4rem;
+  padding-top: 4rem;
+  border-top: 1px solid #eee;
+}
+
+.cart-recommendations h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.recommended-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.recommended-product {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.recommended-product:hover {
+  transform: translateY(-5px);
+}
+
+.recommended-product img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.recommended-product h4 {
+  padding: 1rem;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.recommended-product .price {
+  padding: 0 1rem 1rem;
+  font-weight: bold;
+  color: {{ settings.color_primary }};
+}
+
+.quick-add {
+  padding: 1rem;
+  text-align: center;
+}
+
+.quick-add button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.quick-add button:hover {
+  background-color: #45a049;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-cart-icon {
+  color: #ddd;
+  margin-bottom: 2rem;
+}
+
+.empty-cart h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.empty-cart p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.shop-now-btn {
+  display: inline-block;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.shop-now-btn:hover {
+  background-color: #45a049;
+}
+
+@media (max-width: 768px) {
+  .cart-content {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    grid-template-columns: 100px 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+  }
+
+  .item-quantity, .item-total, .item-remove {
+    grid-column: span 2;
+    justify-self: center;
+  }
+
+  .recommended-products {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Quantity update with AJAX (simplified)
+  const quantityForms = document.querySelectorAll('.quantity-form');
+
+  quantityForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+      // In a real implementation, you'd use AJAX to update the cart
+      // For now, just submit the form normally
+    });
+  });
+
+  // Remove item confirmation
+  const removeButtons = document.querySelectorAll('.remove-btn');
+
+  removeButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      if (!confirm('Är du säker på att du vill ta bort denna produkt från kundvagnen?')) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  // Discount code application
+  const discountForm = document.querySelector('.discount-form');
+
+  if (discountForm) {
+    discountForm.addEventListener('submit', function(e) {
+      const code = document.getElementById('discount-code').value.trim();
+      if (!code) {
+        e.preventDefault();
+        alert('Vänligen ange en rabattkod.');
+      }
+    });
+  }
+});
+</script>

@@ -1,0 +1,19 @@
+<article class="review">
+  <div class="review-stars">
+    {% assign rating_floor = rating | floor %}
+    {% assign rating_ceil = rating | ceil %}
+    <div class="stars">
+      {% for i in (1..5) %}
+        {% if i <= rating_floor %}
+          <span class="star filled">★</span>
+        {% elsif i == rating_ceil and rating != rating_floor %}
+          <span class="star half">★</span>
+        {% else %}
+          <span class="star">☆</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  <p class="review-quote">“{{ quote }}”</p>
+  <p class="review-author">{{ name }}</p>
+</article>

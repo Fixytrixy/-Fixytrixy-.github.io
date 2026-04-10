@@ -1,0 +1,130 @@
+{%- capture breadcrumb_schema -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Hem",
+      "item": "{{ shop.url }}"
+    }
+    {%- if template contains 'product' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ product.collections.first.title | escape }}",
+      "item": "{{ shop.url }}{{ product.collections.first.url }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ product.title | escape }}",
+      "item": "{{ shop.url }}{{ product.url }}"
+    }
+    {%- elsif template contains 'collection' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ collection.title | escape }}",
+      "item": "{{ shop.url }}{{ collection.url }}"
+    }
+    {%- elsif template == 'page' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ page.title | escape }}",
+      "item": "{{ shop.url }}{{ page.url }}"
+    }
+    {%- endif -%}
+  ]
+}
+</script>
+{%- endcapture -%}
+
+{{ breadcrumb_schema }}
+
+<nav aria-label="Breadcrumb" class="breadcrumb-nav">
+  <ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="/">
+        <span itemprop="name">Hem</span>
+      </a>
+      <meta itemprop="position" content="1">
+    </li>
+    
+    {%- if template contains 'product' -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="{{ product.collections.first.url }}">
+          <span itemprop="name">{{ product.collections.first.title | escape }}</span>
+        </a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name">{{ product.title | escape }}</span>
+        <meta itemprop="position" content="3">
+      </li>
+    {%- elsif template contains 'collection' -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name">{{ collection.title | escape }}</span>
+        <meta itemprop="position" content="2">
+      </li>
+    {%- elsif template == 'page' -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name">{{ page.title | escape }}</span>
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+  </ol>
+</nav>
+
+<style>
+.breadcrumb-nav {
+  margin-bottom: 2rem;
+}
+
+.breadcrumb-list {
+  display: flex;
+  list-style: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.breadcrumb-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-list a {
+  color: var(--orange-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-list a:hover {
+  color: var(--orange-dark);
+  text-decoration: underline;
+}
+
+.breadcrumb-list li:not(:last-child)::after {
+  content: '/';
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb-list {
+    font-size: 0.75rem;
+    gap: 0.25rem;
+  }
+
+  .breadcrumb-list li:not(:last-child)::after {
+    margin-left: 0.25rem;
+  }
+}
+</style>

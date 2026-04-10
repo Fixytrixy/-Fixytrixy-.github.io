@@ -1,0 +1,205 @@
+<form class="newsletter-form" method="post" action="/contact">
+  <input type="hidden" name="form_type" value="customer">
+  <input type="hidden" name="utf8" value="✓">
+  
+  <div class="newsletter-form-group">
+    <label for="email-{{ section.id }}" class="newsletter-label">
+      {{ label_text | default: 'E-postadress' }}
+    </label>
+    
+    <div class="newsletter-input-group">
+      <input 
+        type="email" 
+        name="email" 
+        id="email-{{ section.id }}"
+        class="newsletter-input"
+        placeholder="din@email.com"
+        required 
+        aria-label="E-postadress">
+      
+      <button type="submit" class="newsletter-btn">
+        {{ button_text | default: 'Prenumerera' }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="newsletter-consent">
+    <label>
+      <input type="checkbox" name="consent" required>
+      <span>Jag accepterar att ta emot nyhetsbrev och erbjudanden från Fixaotrixa</span>
+    </label>
+  </div>
+
+  {%- if form.errors -%}
+    <div class="form-error" role="alert">
+      {{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}
+    </div>
+  {%- endif -%}
+
+  {%- if form.posted_successfully? -%}
+    <div class="form-success" role="status">
+      ✓ Tack för att du prenumererar på vårt nyhetsbrev!
+    </div>
+  {%- endif -%}
+</form>
+
+<style>
+.newsletter-form {
+  width: 100%;
+  max-width: 500px;
+}
+
+.newsletter-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.newsletter-label {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #B3AFA0);
+  margin-bottom: 0.75rem;
+}
+
+.newsletter-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px 0 0 8px;
+  color: var(--text-dark, #F0EDE8);
+  font-family: 'Syne', sans-serif;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.newsletter-input::placeholder {
+  color: var(--text-muted, #7A7D78);
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--orange-primary, #FF6B35);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.newsletter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--orange-primary, #FF6B35);
+  color: var(--bg-dark, #0E0E0E);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+
+.newsletter-btn:hover {
+  background: var(--orange-dark, #FF8C42);
+  transform: translateX(2px);
+}
+
+.newsletter-btn:focus {
+  outline: 2px solid var(--orange-primary, #FF6B35);
+  outline-offset: 2px;
+}
+
+.newsletter-consent {
+  margin-bottom: 0;
+}
+
+.newsletter-consent label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #B3AFA0);
+  cursor: pointer;
+}
+
+.newsletter-consent input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.form-error {
+  padding: 1rem;
+  background: rgba(255, 107, 53, 0.1);
+  border-left: 3px solid var(--orange-primary, #FF6B35);
+  color: var(--orange-primary, #FF6B35);
+  font-size: 0.875rem;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+}
+
+.form-success {
+  padding: 1rem;
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #4CAF50;
+  color: #4CAF50;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .newsletter-input-group {
+    flex-direction: column;
+  }
+
+  .newsletter-input,
+  .newsletter-btn {
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .newsletter-input {
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .newsletter-btn {
+    border-radius: 8px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const forms = document.querySelectorAll('.newsletter-form');
+  
+  forms.forEach(form => {
+    const input = form.querySelector('.newsletter-input');
+    
+    if (input) {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.borderColor = 'var(--orange-primary, #FF6B35)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      });
+    }
+  });
+});
+</script>

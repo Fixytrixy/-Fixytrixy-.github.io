@@ -1,0 +1,173 @@
+{%- if page.url contains '/policies' -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "{{ page.title | escape }}",
+    "description": "{{ page.description | escape | strip_html }}",
+    "mainEntity": {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "@language": "sv",
+          "name": "Vad är Fixaotrixa?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Fixaotrixa är en svensk förvaringsbrand som specialiserar sig på smarta organiseringslösningar för hemmet."
+          }
+        }
+      ]
+    }
+  }
+  </script>
+{%- endif -%}
+
+<div class="page-container">
+  <div class="page-header">
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a itemprop="item" href="/">
+            <span itemprop="name">Hem</span>
+          </a>
+          <meta itemprop="position" content="1">
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ page.title | escape }}</span>
+          <meta itemprop="position" content="2">
+        </li>
+      </ol>
+    </nav>
+    
+    <h1>{{ page.title }}</h1>
+  </div>
+
+  <div class="page-content">
+    {%- if page.content -%}
+      <article class="rich-text">
+        {{ page.content }}
+      </article>
+    {%- else -%}
+      <p>{{ page.body_html }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if page.handle == 'returpolicy' or page.handle == 'kopvillkor' or page.handle == 'integritetspolicy' or page.handle == 'leveransinformation' -%}
+    <div class="policy-cta">
+      <h2>Fler frågor?</h2>
+      <p>Kontakta vår kundservice för hjälp</p>
+      <a href="{{ pages['kontakt'].url | default: '/pages/kontakt' }}" class="btn btn-primary">Kontakta oss</a>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .page-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: var(--section-padding);
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+  }
+
+  .page-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+  }
+
+  .rich-text h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+  }
+
+  .rich-text h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+  }
+
+  .rich-text p {
+    margin-bottom: 1.5rem;
+  }
+
+  .rich-text ul,
+  .rich-text ol {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .rich-text li {
+    margin-bottom: 0.75rem;
+  }
+
+  .rich-text strong {
+    color: var(--text-dark);
+    font-weight: 600;
+  }
+
+  .rich-text a {
+    color: var(--orange-primary);
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+
+  .rich-text a:hover {
+    color: var(--orange-dark);
+  }
+
+  .policy-cta {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    padding: 3rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 4rem;
+  }
+
+  .policy-cta h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .policy-cta p {
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-content {
+      font-size: 1rem;
+    }
+
+    .policy-cta {
+      padding: 2rem;
+    }
+
+    .policy-cta h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

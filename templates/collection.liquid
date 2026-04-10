@@ -1,252 +1,681 @@
-{% comment %}
-  Collection Template – Fixaotrixa
-  Kategori/kollektionssida med filtrering och produktgrid
-{% endcomment %}
-
-<!-- Schema.org BreadcrumbList -->
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Hem",
-      "item": {{ request.origin | json }}
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": {{ collection.title | json }},
-      "item": {{ request.origin | append: collection.url | json }}
-    }
-  ]
+  "@context": "https://schema.org/",
+  "@type": "CollectionPage",
+  "name": "{{ collection.title | escape }}",
+  "description": "{{ collection.description | escape | strip_html }}",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Hem",
+        "item": "/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "{{ collection.title | escape }}",
+        "item": "{{ shop.url }}{{ collection.url }}"
+      }
+    ]
+  }
 }
 </script>
 
 <div class="collection-page">
-  <!-- Breadcrumbs -->
-  <nav class="breadcrumbs" aria-label="Brödsmulor">
-    <ol class="breadcrumbs__list">
-      <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link">Hem</a></li>
-      <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">{{ collection.title }}</li>
-    </ol>
-  </nav>
+  <div class="container">
+    {%- assign sort_by = request.params.sort_by | default: 'manual' -%}
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a itemprop="item" href="/">
+            <span itemprop="name">Hem</span>
+          </a>
+          <meta itemprop="position" content="1">
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ collection.title | escape }}</span>
+          <meta itemprop="position" content="2">
+        </li>
+      </ol>
+    </nav>
+    <div class="collection-header">
+      <h1>{{ collection.title }}</h1>
+      <p>{{ collection.description }}</p>
 
-  <!-- Collection Header -->
-  <div class="collection-page__header">
-    {%- if collection.image -%}
-      <div class="collection-page__hero">
-        <img
-          src="{{ collection.image | image_url: width: 1500 }}"
-          alt="{{ collection.image.alt | default: collection.title | escape }}"
-          loading="eager"
-          fetchpriority="high"
-          width="1500"
-          height="400"
-          class="collection-page__hero-img">
-        <div class="collection-page__hero-overlay">
-          <h1 class="collection-page__title">{{ collection.title }}</h1>
+      <div class="collection-filters">
+        <div class="sort-options">
+          <label for="sort-select">Sortera:</label>
+          <select id="sort-select" onchange="window.location.href = this.value">
+            <option value="?sort_by=manual" {% if sort_by == 'manual' %}selected{% endif %}>Rekommenderat</option>
+            <option value="?sort_by=price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>Pris: Låg till hög</option>
+            <option value="?sort_by=price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>Pris: Hög till låg</option>
+            <option value="?sort_by=title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>Namn: A-Ö</option>
+            <option value="?sort_by=title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>Namn: Ö-A</option>
+            <option value="?sort_by=created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>Nyast först</option>
+            <option value="?sort_by=best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>Bästsäljande</option>
+          </select>
+        </div>
+
+        <div class="view-options">
+          <button class="view-btn active" data-view="grid" title="Rutnät vy">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z"/>
+            </svg>
+          </button>
+          <button class="view-btn" data-view="list" title="List vy">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/>
+            </svg>
+          </button>
         </div>
       </div>
-    {%- else -%}
-      <h1 class="collection-page__title collection-page__title--no-image">{{ collection.title }}</h1>
-    {%- endif -%}
-
-    {%- if collection.description != blank -%}
-      <div class="collection-page__description rte">
-        {{ collection.description }}
-      </div>
-    {%- endif -%}
-  </div>
-
-  <!-- Toolbar: sort + filter count -->
-  <div class="collection-page__toolbar">
-    <p class="collection-page__count" aria-live="polite">
-      {{ collection.products_count }} produkter
-    </p>
-
-    <div class="collection-page__sort">
-      <label for="SortBy" class="sr-only">Sortera efter</label>
-      <select
-        id="SortBy"
-        class="sort-select"
-        name="sort_by"
-        onchange="window.location.href = '{{ collection.url }}?sort_by=' + this.value">
-        <option value="manual"{% if collection.sort_by == 'manual' %} selected{% endif %}>Rekommenderade</option>
-        <option value="best-selling"{% if collection.sort_by == 'best-selling' %} selected{% endif %}>Bäst säljande</option>
-        <option value="title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>A–Ö</option>
-        <option value="title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>Ö–A</option>
-        <option value="price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Pris: lägst först</option>
-        <option value="price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Pris: högst först</option>
-        <option value="created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Nyaste</option>
-      </select>
     </div>
-  </div>
 
-  <!-- Room Filter -->
-  {%- assign room_filters = 'Kök,Sovrum,Garderob,Badrum,Garage,Kontor' | split: ',' -%}
-  {%- assign room_tags   = 'room-kitchen,room-bedroom,room-closet,room-bathroom,room-garage,room-office' | split: ',' -%}
-  {%- assign room_icons  = '🍳,🛏️,👗,🚿,🚗,💼' | split: ',' -%}
-  {%- assign active_room = request.param.tag | downcase -%}
-  <div class="room-filter" role="group" aria-label="Filtrera efter rum" id="room-filter">
-    <span class="room-filter__label">Rum:</span>
-    <button
-      class="room-filter__btn"
-      data-room=""
-      aria-pressed="{% if active_room == blank %}true{% else %}false{% endif %}">
-      Alla rum
-    </button>
-    {%- for room in room_filters -%}
-      {%- assign room_tag = room_tags[forloop.index0] -%}
-      <button
-        class="room-filter__btn"
-        data-room="{{ room_tag }}"
-        aria-pressed="{% if active_room == room_tag %}true{% else %}false{% endif %}">
-        <span class="room-filter__icon" aria-hidden="true">{{ room_icons[forloop.index0] }}</span>
-        {{ room }}
-      </button>
-    {%- endfor -%}
-  </div>
+    <div class="collection-content">
+      <aside class="collection-sidebar">
+        <div class="filter-section">
+          <h3>Filtrera produkter</h3>
 
-  <!-- Products Grid -->
-  <div class="collection-page__grid">
-    {%- if collection.products.size > 0 -%}
-      <ul class="product-grid" role="list" id="product-grid">
-        {%- for product in collection.products -%}
-          {%- assign product_tags_lower = product.tags | join: ',' | downcase -%}
-          <li class="product-grid__item" data-tags="{{ product_tags_lower }}">
-            <article class="product-card" itemscope itemtype="https://schema.org/Product">
-              <a href="{{ product.url | within: collection }}" class="product-card__link" aria-label="{{ product.title }}">
-                <div class="product-card__media">
-                  {%- if product.featured_image -%}
-                    <img
-                      src="{{ product.featured_image | image_url: width: 400 }}"
-                      srcset="{{ product.featured_image | image_url: width: 200 }} 200w,
-                              {{ product.featured_image | image_url: width: 400 }} 400w,
-                              {{ product.featured_image | image_url: width: 600 }} 600w"
-                      sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
-                      loading="lazy"
-                      width="400"
-                      height="400"
-                      class="product-card__img"
-                      itemprop="image">
-                  {%- else -%}
-                    {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
-                  {%- endif -%}
-
-                  {%- if product.tags contains 'best-seller' -%}
-                    <span class="product-card__badge product-card__badge--best-seller" aria-label="Mest populär">
-                      ⭐ Mest populär
-                    </span>
-                  {%- endif -%}
-
-                  {%- if product.compare_at_price > product.price -%}
-                    <span class="product-card__badge product-card__badge--sale" aria-label="Rea">
-                      Rea
-                    </span>
-                  {%- endif -%}
-                </div>
-
-                <div class="product-card__info">
-                  {%- if product.vendor -%}
-                    <p class="product-card__vendor" itemprop="brand">{{ product.vendor }}</p>
-                  {%- endif -%}
-
-                  <h2 class="product-card__title" itemprop="name">{{ product.title }}</h2>
-
-                  {%- if product.metafields.reviews.rating -%}
-                    <div class="product-card__rating" aria-label="{{ product.metafields.reviews.rating.value.rating }} av 5">
-                      {% assign r = product.metafields.reviews.rating.value.rating | round %}
-                      {% for i in (1..5) %}
-                        <svg class="star{% if i > r %} star--empty{% endif %}" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                      {% endfor %}
-                      <span class="product-card__review-count">({{ product.metafields.reviews.rating_count }})</span>
+          {%- for filter in collection.filters -%}
+            <div class="filter-group">
+              <h4>{{ filter.label }}</h4>
+              {%- case filter.type -%}
+                {%- when 'list' -%}
+                  <ul class="filter-list">
+                    {%- for filter_value in filter.values -%}
+                      <li>
+                        <label>
+                          <input type="checkbox" value="{{ filter_value.value }}" {% if filter_value.active %}checked{% endif %}>
+                          {{ filter_value.label }}
+                          <span class="count">({{ filter_value.count }})</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- when 'price_range' -%}
+                  <div class="price-range">
+                    <div class="price-inputs">
+                      <input type="number" placeholder="Min pris" min="0">
+                      <input type="number" placeholder="Max pris" min="0">
                     </div>
-                  {%- endif -%}
+                    <button class="apply-price-filter">Tillämpa</button>
+                  </div>
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </aside>
 
-                  <div class="product-card__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                    <meta itemprop="priceCurrency" content="{{ cart.currency.iso_code }}">
-                    {%- if product.compare_at_price > product.price -%}
-                      <s class="product-card__price-compare">{{ product.compare_at_price | money }}</s>
-                      <span class="product-card__price-current product-card__price--sale" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
-                        {{ product.price | money }}
-                      </span>
-                    {%- else -%}
-                      <span class="product-card__price-current" itemprop="price" content="{{ product.price | divided_by: 100.0 }}">
-                        {{ product.price | money }}
-                      </span>
-                    {%- endif -%}
+      <main class="collection-products">
+        <div class="products-grid" id="products-grid">
+          {%- paginate collection.products by 24 -%}
+            {%- for product in paginate.items -%}
+              <div class="product-card" data-product-id="{{ product.id }}">
+                <div class="product-image">
+                  <a href="{{ product.url }}">
+                    <img src="{{ product.featured_image | image_url: width: 400, height: 400, crop: 'center' }}" alt="{{ product.title }}" width="400" height="400" loading="lazy">
+                  </a>
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="sale-badge">REA</span>
+                  {%- endif -%}
+                  <div class="product-actions">
+                    <button class="quick-view-btn" data-product="{{ product.handle }}">Snabbvy</button>
+                    <form action="{{ routes.cart_add_url }}" method="post" class="quick-add-form">
+                      <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                      <button type="submit" class="quick-add-btn">Snabbköp</button>
+                    </form>
                   </div>
                 </div>
-              </a>
 
-              <div class="product-card__actions">
-                {%- form 'product', product, class: 'product-card__form' -%}
-                  <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                  <input type="hidden" name="quantity" value="1">
-                  <button
-                    type="submit"
-                    name="add"
-                    class="btn btn--primary btn--full btn--small product-card__add"
-                    {%- unless product.available -%}disabled{%- endunless -%}
-                    aria-label="{% if product.available %}Lägg i varukorg – {{ product.title }}{% else %}Slutsåld{% endif %}">
-                    {%- if product.available -%}
-                      Lägg i varukorg
-                    {%- else -%}
-                      Slutsåld
+                <div class="product-info">
+                  <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                  <div class="product-price">
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="original-price">{{ product.compare_at_price | money }}</span>
                     {%- endif -%}
-                  </button>
-                {%- endform -%}
+                    <span class="current-price">{{ product.price | money }}</span>
+                  </div>
+                  <div class="product-rating">
+                    <div class="stars">
+                      {%- assign rating = product.metafields.reviews.rating | default: 4.5 -%}
+                      {%- for i in (1..5) -%}
+                        {%- assign half_threshold = i | minus: 0.5 -%}
+                        {%- if rating >= i -%}
+                          <span class="star filled">★</span>
+                        {%- elsif rating >= half_threshold -%}
+                          <span class="star half">★</span>
+                        {%- else -%}
+                          <span class="star">☆</span>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                    <span class="review-count">({{ product.metafields.reviews.count | default: 0 }})</span>
+                  </div>
+                  <p class="product-description">{{ product.description | strip_html | truncate: 100 }}</p>
+                </div>
               </div>
-            </article>
-          </li>
-        {%- endfor -%}
-      </ul>
-      <p class="collection-page__no-results" id="room-filter-no-results" aria-live="polite">
-        Inga produkter hittades för det valda rummet.
-      </p>
+            {%- endfor -%}
 
-      <!-- Pagination -->
-      {%- if paginate.pages > 1 -%}
-        <nav class="pagination" aria-label="Sidor">
-          {%- if paginate.previous -%}
-            <a href="{{ paginate.previous.url }}" class="pagination__btn pagination__btn--prev" aria-label="Föregående sida">
-              ← Föregående
-            </a>
-          {%- endif -%}
-
-          <span class="pagination__current" aria-current="page">
-            Sida {{ paginate.current_page }} av {{ paginate.pages }}
-          </span>
-
-          {%- if paginate.next -%}
-            <a href="{{ paginate.next.url }}" class="pagination__btn pagination__btn--next" aria-label="Nästa sida">
-              Nästa →
-            </a>
-          {%- endif -%}
-        </nav>
-      {%- endif -%}
-
-    {%- else -%}
-      <div class="collection-page__empty">
-        <p>Inga produkter hittades i den här kategorin ännu. Kolla tillbaka snart!</p>
-        <a href="/collections/all" class="btn btn--outline">Visa alla produkter</a>
-      </div>
-    {%- endif -%}
-  </div>
-
-  <!-- SEO long-form description (FAQ) at bottom -->
-  {%- assign faq_meta = collection.metafields.custom.faq_content -%}
-  {%- if faq_meta != blank -%}
-    <div class="collection-page__seo-content rte">
-      {{ faq_meta }}
+            {%- if paginate.pages > 1 -%}
+              <div class="pagination">
+                {{ paginate | default_pagination }}
+              </div>
+            {%- endif -%}
+          {%- endpaginate -%}
+        </div>
+      </main>
     </div>
-  {%- endif -%}
+  </div>
 </div>
 
-{%- paginate collection.products by 24 -%}{%- endpaginate -%}
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div id="quick-view-content"></div>
+  </div>
+</div>
+
+<style>
+.collection-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.collection-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.collection-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.view-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-btn {
+  background: none;
+  border: 2px solid #ddd;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.view-btn.active {
+  border-color: {{ settings.color_primary }};
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.collection-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+}
+
+.collection-sidebar {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  border-radius: 8px;
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.filter-section h3 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.filter-group {
+  margin-bottom: 2rem;
+}
+
+.filter-group h4 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.filter-list {
+  list-style: none;
+  padding: 0;
+}
+
+.filter-list li {
+  margin-bottom: 0.5rem;
+}
+
+.filter-list label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filter-list input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.count {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.price-range {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 1rem;
+}
+
+.price-inputs input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.apply-price-filter {
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.sale-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.product-actions {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .product-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quick-view-btn, .quick-add-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.quick-view-btn {
+  background-color: rgba(255,255,255,0.9);
+  color: #333;
+}
+
+.quick-view-btn:hover {
+  background-color: white;
+}
+
+.quick-add-btn {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.quick-add-btn:hover {
+  background-color: #45a049;
+}
+
+.product-info {
+  padding: 1.5rem;
+}
+
+.product-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-info h3 a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.product-info h3 a:hover {
+  color: {{ settings.color_primary }};
+}
+
+.product-price {
+  margin-bottom: 0.5rem;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 0.5rem;
+}
+
+.current-price {
+  font-weight: bold;
+  color: {{ settings.color_primary }};
+  font-size: 1.2rem;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stars {
+  display: flex;
+}
+
+.star {
+  color: #ddd;
+  font-size: 1rem;
+}
+
+.star.filled {
+  color: #FFD700;
+}
+
+.star.half {
+  color: #FFD700;
+  position: relative;
+}
+
+.star.half::after {
+  content: '★';
+  position: absolute;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #ddd;
+}
+
+.review-count {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.product-description {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.pagination {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.pagination a, .pagination span {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  margin: 0 0.25rem;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.pagination a:hover, .pagination .current {
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border-color: {{ settings.color_primary }};
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 5% auto;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+/* List View */
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-card-list {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.product-card-list .product-image {
+  flex: 0 0 200px;
+}
+
+.product-card-list .product-image img {
+  height: 100%;
+  width: 200px;
+  object-fit: cover;
+}
+
+.product-card-list .product-info {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .collection-content {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-sidebar {
+    order: 2;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .product-card-list {
+    flex-direction: column;
+  }
+
+  .product-card-list .product-image {
+    flex: none;
+  }
+
+  .product-card-list .product-image img {
+    width: 100%;
+    height: 200px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // View switching
+  const viewButtons = document.querySelectorAll('.view-btn');
+  const productsGrid = document.getElementById('products-grid');
+
+  viewButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const view = this.getAttribute('data-view');
+      viewButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+
+      if (view === 'list') {
+        productsGrid.className = 'products-list';
+        document.querySelectorAll('.product-card').forEach(card => {
+          card.className = 'product-card-list';
+        });
+      } else {
+        productsGrid.className = 'products-grid';
+        document.querySelectorAll('.product-card-list').forEach(card => {
+          card.className = 'product-card';
+        });
+      }
+    });
+  });
+
+  // Quick view modal
+  const modal = document.getElementById('quick-view-modal');
+  const closeModal = document.querySelector('.close-modal');
+  const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+
+  quickViewButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const productHandle = this.getAttribute('data-product');
+      // In a real implementation, you'd fetch product data via AJAX
+      // For now, we'll just show a placeholder
+      document.getElementById('quick-view-content').innerHTML = `
+        <h2>Snabbvy för ${productHandle}</h2>
+        <p>Produktdetaljer skulle laddas här...</p>
+      `;
+      modal.style.display = 'block';
+    });
+  });
+
+  closeModal.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Filter functionality (basic implementation)
+  const filterCheckboxes = document.querySelectorAll('.filter-list input[type="checkbox"]');
+
+  filterCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      // In a real implementation, you'd update the URL with filter parameters
+      // and reload the page or use AJAX to filter products
+      console.log('Filter changed:', this.value, this.checked);
+    });
+  });
+
+  // Price filter
+  const applyPriceFilter = document.querySelector('.apply-price-filter');
+  if (applyPriceFilter) {
+    applyPriceFilter.addEventListener('click', function() {
+      const minPrice = document.querySelector('.price-inputs input:first-child').value;
+      const maxPrice = document.querySelector('.price-inputs input:last-child').value;
+      // Apply price filter logic here
+      console.log('Price filter:', minPrice, maxPrice);
+    });
+  }
+});
+</script>

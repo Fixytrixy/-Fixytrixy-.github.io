@@ -1,0 +1,121 @@
+{%- liquid
+  assign button_text = button_text | default: 'Lägg i kundvagn'
+  assign button_class = button_class | default: 'btn-primary'
+  assign button_url = button_url | default: '#'
+  assign button_type = button_type | default: 'link'
+-%}
+
+{%- if button_type == 'submit' -%}
+  <button type="submit" class="btn {{ button_class }}" {% if button_disabled %}disabled{% endif %}>
+    {{ button_text }}
+  </button>
+{%- elsif button_type == 'button' -%}
+  <button type="button" class="btn {{ button_class }}" {% if button_disabled %}disabled{% endif %}>
+    {{ button_text }}
+  </button>
+{%- else -%}
+  <a href="{{ button_url }}" class="btn {{ button_class }}">
+    {{ button_text }}
+  </a>
+{%- endif -%}
+
+<style>
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: var(--orange-primary, #FF6B35);
+  color: var(--bg-dark, #0E0E0E);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--orange-dark, #FF8C42);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--orange-primary, #FF6B35);
+  color: var(--orange-primary, #FF6B35);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 107, 53, 0.1);
+  border-color: var(--orange-dark, #FF8C42);
+  color: var(--orange-dark, #FF8C42);
+}
+
+/* Outline Button */
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--orange-primary, #FF6B35);
+  color: var(--orange-primary, #FF6B35);
+}
+
+/* Small Button */
+.btn-small {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+}
+
+/* Large Button */
+.btn-large {
+  padding: 1.25rem 3rem;
+  font-size: 1.125rem;
+}
+
+/* Full Width */
+.btn-block {
+  width: 100%;
+}
+
+/* Icon Button */
+.btn-icon {
+  padding: 0.75rem;
+  gap: 0;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+}
+</style>
