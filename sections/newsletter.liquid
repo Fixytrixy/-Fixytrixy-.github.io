@@ -1,0 +1,41 @@
+<section class="newsletter-section sa">
+  <div class="container">
+    <div class="newsletter-inner">
+      {%- if section.settings.heading != blank -%}
+        <h2>{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p>{{ section.settings.subtext }}</p>
+      {%- endif -%}
+
+      {% render 'newsletter-form', section_id: section.id %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Nyhetsbrev",
+  "tag": "section",
+  "class": "section-newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Få exklusiva erbjudanden"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Undertext",
+      "default": "Prenumerera och få 10% rabatt på din första order"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nyhetsbrev"
+    }
+  ]
+}
+{% endschema %}
