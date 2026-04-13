@@ -1,22 +1,31 @@
-<article class="product-card">
-  <a href="{{ product.url }}">
-    <img src="{{ product.featured_image | image_url: width: 400, height: 300, crop: 'center' }}" alt="{{ product.title }}" width="400" height="300" loading="lazy">
+<article class="product-card sa">
+  <a href="{{ product.url }}" class="product-card__image-link">
+    {%- if product.featured_image != blank -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 400, height: 300, crop: 'center' }}"
+        data-src="{{ product.featured_image | image_url: width: 400, height: 300, crop: 'center' }}"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        width="400"
+        height="300"
+        loading="lazy"
+      >
+    {%- else -%}
+      <div class="product-card__no-image">{{ product.title }}</div>
+    {%- endif -%}
+    {%- if product.compare_at_price > product.price -%}
+      <span class="product-card__badge">Rea</span>
+    {%- endif -%}
   </a>
-  <h4><a href="{{ product.url }}">{{ product.title }}</a></h4>
-  <div class="product-rating">
-    {% assign stars = product.metafields.global.rating | default: 4.5 %}
-    {% assign stars_floor = stars | floor %}
-    <div class="stars">
-      {% for i in (1..5) %}
-        {% if i <= stars_floor %}
-          <span class="star filled">★</span>
-        {% else %}
-          <span class="star">☆</span>
-        {% endif %}
-      {% endfor %}
+  <div class="product-card__info">
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="product-card__price--compare">{{ product.compare_at_price | money }}</span>
+      {%- endif -%}
+      <span class="product-card__price--current">{{ product.price | money }}</span>
     </div>
-    <span class="rating-number">({{ stars }})</span>
+    <a href="{{ product.url }}" class="btn btn--primary product-card__cta">Se produkt</a>
   </div>
-  <span class="price">{{ product.price | money }}</span>
-  <a href="{{ product.url }}" class="buy-btn">Se produkt</a>
 </article>

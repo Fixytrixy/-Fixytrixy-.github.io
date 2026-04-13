@@ -1,0 +1,162 @@
+<div class="hero sa scale-in" id="hero">
+  <div class="container">
+    <div class="hero-content">
+      <p class="hero-kicker sa from-left sa-d1">{{ section.settings.kicker | default: 'Fixaotrixa' }}</p>
+      <h1 class="hero-headline word-reveal sa sa-d2">{{ section.settings.headline | default: 'Stopp för kaos. Börja organisera.' }}</h1>
+      <p class="hero-sub sa from-left sa-d3">{{ section.settings.subtext | default: 'Sveriges smartaste förvaringslösningar för kök, sovrum, badrum och trädgård – levererade direkt hem till dig.' }}</p>
+      <div class="hero-cta-group sa sa-d4">
+        <a href="{{ section.settings.primary_cta_url | default: '/collections/all' }}" class="btn btn--primary">
+          {{ section.settings.primary_cta_label | default: 'Shoppa nu' }}
+        </a>
+        <a href="{{ section.settings.secondary_cta_url | default: '#quiz-container' }}" class="btn btn--secondary">
+          {{ section.settings.secondary_cta_label | default: 'Hitta rätt produkt' }}
+        </a>
+      </div>
+    </div>
+
+    {%- if section.settings.hero_image != blank -%}
+      <div class="hero-image sa from-right sa-d2">
+        <img
+          src="{{ section.settings.hero_image | image_url: width: 800 }}"
+          alt="{{ section.settings.hero_image_alt | default: 'Hero bild' }}"
+          width="800"
+          loading="eager"
+          fetchpriority="high"
+        >
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_stats -%}
+    <div class="hero-stats container sa sa-d5">
+      <div class="stat">
+        <span class="stat-num" data-count-to="{{ section.settings.stat1_value | default: 12000 }}" data-count-suffix="+">0+</span>
+        <span class="stat-label">{{ section.settings.stat1_label | default: 'Nöjda kunder' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count-to="{{ section.settings.stat2_value | default: 500 }}" data-count-suffix="+">0+</span>
+        <span class="stat-label">{{ section.settings.stat2_label | default: 'Produkter' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count-to="{{ section.settings.stat3_value | default: 4 }}" data-count-suffix=".8 ★">0</span>
+        <span class="stat-label">{{ section.settings.stat3_label | default: 'Genomsnittsbetyg' }}</span>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "class": "section-hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Övre text (kicker)",
+      "default": "Fixaotrixa"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Rubrik",
+      "default": "Stopp för kaos. Börja organisera."
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Undertext",
+      "default": "Sveriges smartaste förvaringslösningar för kök, sovrum, badrum och trädgård."
+    },
+    {
+      "type": "text",
+      "id": "primary_cta_label",
+      "label": "Primär knapptext",
+      "default": "Shoppa nu"
+    },
+    {
+      "type": "url",
+      "id": "primary_cta_url",
+      "label": "Primär knapp-URL"
+    },
+    {
+      "type": "text",
+      "id": "secondary_cta_label",
+      "label": "Sekundär knapptext",
+      "default": "Hitta rätt produkt"
+    },
+    {
+      "type": "url",
+      "id": "secondary_cta_url",
+      "label": "Sekundär knapp-URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Herobild"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_alt",
+      "label": "Bildtext (alt)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Visa statistik",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "stat1_value",
+      "min": 100,
+      "max": 100000,
+      "step": 100,
+      "label": "Stat 1 – värde",
+      "default": 12000
+    },
+    {
+      "type": "text",
+      "id": "stat1_label",
+      "label": "Stat 1 – etikett",
+      "default": "Nöjda kunder"
+    },
+    {
+      "type": "range",
+      "id": "stat2_value",
+      "min": 10,
+      "max": 10000,
+      "step": 10,
+      "label": "Stat 2 – värde",
+      "default": 500
+    },
+    {
+      "type": "text",
+      "id": "stat2_label",
+      "label": "Stat 2 – etikett",
+      "default": "Produkter"
+    },
+    {
+      "type": "range",
+      "id": "stat3_value",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Stat 3 – värde",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "stat3_label",
+      "label": "Stat 3 – etikett",
+      "default": "Genomsnittsbetyg"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
+}
+{% endschema %}

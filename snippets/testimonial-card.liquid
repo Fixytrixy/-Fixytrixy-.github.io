@@ -1,19 +1,28 @@
-<article class="review">
+<article class="review sa">
+  {%- if avatar != blank -%}
+    <div class="review-avatar">
+      <img src="{{ avatar | image_url: width: 60, height: 60, crop: 'center' }}" alt="{{ author }}" width="60" height="60" loading="lazy">
+    </div>
+  {%- endif -%}
   <div class="review-stars">
-    {% assign rating_floor = rating | floor %}
-    {% assign rating_ceil = rating | ceil %}
-    <div class="stars">
-      {% for i in (1..5) %}
-        {% if i <= rating_floor %}
-          <span class="star filled">★</span>
-        {% elsif i == rating_ceil and rating != rating_floor %}
-          <span class="star half">★</span>
-        {% else %}
-          <span class="star">☆</span>
-        {% endif %}
-      {% endfor %}
+    {%- assign rating_val   = rating | default: 5 -%}
+    {%- assign rating_floor = rating_val | floor -%}
+    <div class="stars" aria-label="{{ rating_val }} av 5 stjärnor">
+      {%- for i in (1..5) -%}
+        {%- if i <= rating_floor -%}
+          <span class="star filled" aria-hidden="true">★</span>
+        {%- else -%}
+          <span class="star" aria-hidden="true">☆</span>
+        {%- endif -%}
+      {%- endfor -%}
     </div>
   </div>
-  <p class="review-quote">“{{ quote }}”</p>
-  <p class="review-author">{{ name }}</p>
+  {%- assign review_text = text | default: quote -%}
+  {%- if review_text != blank -%}
+    <p class="review-quote">"{{ review_text }}"</p>
+  {%- endif -%}
+  <p class="review-author">
+    {{ author | default: name }}
+    {%- if location != blank -%}<span class="review-location">, {{ location }}</span>{%- endif -%}
+  </p>
 </article>
