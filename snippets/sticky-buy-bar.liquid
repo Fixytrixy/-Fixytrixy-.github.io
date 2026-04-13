@@ -1,0 +1,111 @@
+{%- comment -%}
+  sticky-buy-bar.liquid
+  Renders a fixed "Köp nu" bar at the bottom of the screen on mobile devices.
+  The bar is hidden when the main product form is visible and shown when
+  the customer has scrolled past it.
+
+  Usage: {% render 'sticky-buy-bar', product: product %}
+{%- endcomment -%}
+
+<div
+  id="sticky-buy-bar"
+  class="sticky-buy-bar"
+  aria-hidden="true"
+  data-product-title="{{ product.title | escape }}"
+>
+  <div class="sticky-buy-bar__inner">
+    <div class="sticky-buy-bar__info">
+      <span class="sticky-buy-bar__title">{{ product.title | escape | truncatewords: 6 }}</span>
+      <span class="sticky-buy-bar__price">{{ product.price | money }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="sticky-buy-bar__btn"
+      id="sticky-buy-bar-btn"
+      aria-label="{{ 'Köp nu' | escape }} – {{ product.title | escape }}"
+    >
+      Köp nu
+    </button>
+  </div>
+</div>
+
+<style>
+/* ── Sticky buy bar ─────────────────────────────────────── */
+.sticky-buy-bar {
+  display: none; /* desktop: always hidden */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.sticky-buy-bar.is-visible {
+  transform: translateY(0);
+}
+
+.sticky-buy-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.sticky-buy-bar__info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sticky-buy-bar__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sticky-buy-bar__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: {{ settings.color_primary | default: '#FF6B35' }};
+}
+
+.sticky-buy-bar__btn {
+  flex-shrink: 0;
+  background-color: {{ settings.color_primary | default: '#FF6B35' }};
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.sticky-buy-bar__btn:hover,
+.sticky-buy-bar__btn:focus {
+  background-color: #e55a2b;
+  outline: 2px solid #e55a2b;
+  outline-offset: 2px;
+}
+
+/* Only show on mobile */
+@media (max-width: 768px) {
+  .sticky-buy-bar {
+    display: block;
+  }
+}
+</style>
