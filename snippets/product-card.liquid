@@ -20,6 +20,19 @@
     <h3 class="product-card__title">
       <a href="{{ product.url }}">{{ product.title }}</a>
     </h3>
+    <div class="product-card__rating">
+      {%- assign card_rating = product.metafields.reviews.rating.value | default: 4.5 -%}
+      {%- assign card_rating_floor = card_rating | floor -%}
+      <div class="stars" aria-label="{{ card_rating }} av 5 stjärnor">
+        {%- for i in (1..5) -%}
+          {%- if i <= card_rating_floor -%}
+            <span class="star filled" aria-hidden="true">★</span>
+          {%- else -%}
+            <span class="star" aria-hidden="true">☆</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
     <div class="product-card__price">
       {%- if product.compare_at_price > product.price -%}
         <span class="product-card__price--compare">{{ product.compare_at_price | money }}</span>

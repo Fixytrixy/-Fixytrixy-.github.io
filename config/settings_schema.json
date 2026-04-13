@@ -211,6 +211,12 @@
         "id": "exit_intent_enabled",
         "label": "Aktivera exit-intent popup",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_newsletter",
+        "label": "Aktivera nyhetsbrevspopup",
+        "default": true
       }
     ]
   },
