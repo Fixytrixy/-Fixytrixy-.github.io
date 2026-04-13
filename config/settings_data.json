@@ -11,6 +11,8 @@
   },
   "current": {
     "colors_text": "#212121",
+    "colors_background_1": "#ffffff",
+    "colors_background_2": "#F5EFE6",
     "colors_background_1": "#F5EFE6",
     "colors_background_2": "#ffffff",
     "colors_solid_button_labels": "#ffffff",
