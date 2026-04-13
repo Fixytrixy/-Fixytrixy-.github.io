@@ -3,6 +3,38 @@
     <h1>Din kundvagn</h1>
 
     {%- if cart.item_count > 0 -%}
+      <!-- Free shipping progress bar -->
+      {%- assign free_shipping_threshold = 49900 -%}
+      {%- assign cart_total = cart.total_price -%}
+      {%- assign remaining = free_shipping_threshold | minus: cart_total -%}
+      <div class="free-shipping-bar">
+        {%- if remaining <= 0 -%}
+          <p class="free-shipping-bar__text free-shipping-bar__text--achieved">🎉 Grattis! Du har fri frakt!</p>
+          <div class="free-shipping-bar__track">
+            <div class="free-shipping-bar__fill" style="width: 100%"></div>
+          </div>
+        {%- else -%}
+          <p class="free-shipping-bar__text">🚚 {{ remaining | money }} kvar till fri frakt!</p>
+          {%- assign progress_pct = cart_total | times: 100 | divided_by: free_shipping_threshold -%}
+          <div class="free-shipping-bar__track">
+            <div class="free-shipping-bar__fill" style="width: {{ progress_pct }}%"></div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Bundle discount section -->
+      <div class="bundle-offer">
+        <div class="bundle-offer__inner">
+          <h3>🎉 Köp 3, betala för 2</h3>
+          <p>Lägg till fler produkter i din kundvagn och spara! Rabatten tillämpas automatiskt i kassan.</p>
+          {%- if cart.item_count < 3 -%}
+            <p class="bundle-offer__progress">Du har {{ cart.item_count }} {% if cart.item_count == 1 %}produkt{% else %}produkter{% endif %} — lägg till {{ 3 | minus: cart.item_count }} till!</p>
+          {%- else -%}
+            <p class="bundle-offer__achieved">✓ Du kvalificerar dig för paketerbjudandet!</p>
+          {%- endif -%}
+        </div>
+      </div>
+
       <div class="cart-content">
         <div class="cart-items">
           {%- for item in cart.items -%}
@@ -141,6 +173,72 @@
 </div>
 
 <style>
+/* Free shipping progress bar */
+.free-shipping-bar {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.free-shipping-bar__text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.free-shipping-bar__text--achieved {
+  color: #2e7d32;
+}
+
+.free-shipping-bar__track {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.free-shipping-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #C4704F, #7A9E7E);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* Bundle discount section */
+.bundle-offer {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  background: #f5efe6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.bundle-offer h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.bundle-offer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.bundle-offer__progress {
+  margin-top: 0.5rem !important;
+  font-weight: 600;
+  color: #C4704F !important;
+}
+
+.bundle-offer__achieved {
+  margin-top: 0.5rem !important;
+  font-weight: 600;
+  color: #2e7d32 !important;
+}
+
 .cart-page {
   padding: 2rem 0;
 }
