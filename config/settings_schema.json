@@ -12,7 +12,7 @@
         "type": "color",
         "id": "colors_background_1",
         "label": "Bakgrundsfärg 1",
-        "default": "#ffffff"
+        "default": "#F5EFE6"
       },
       {
         "type": "color",
@@ -30,25 +30,43 @@
         "type": "color",
         "id": "colors_outline_button_labels",
         "label": "Outline-knapp text",
-        "default": "#2e7d32"
+        "default": "#C4704F"
       },
       {
         "type": "color",
         "id": "colors_accent_1",
-        "label": "Accentfärg 1",
-        "default": "#2e7d32"
+        "label": "Accentfärg 1 (terrakotta)",
+        "default": "#C4704F"
       },
       {
         "type": "color",
         "id": "colors_accent_2",
-        "label": "Accentfärg 2",
-        "default": "#f57c00"
+        "label": "Accentfärg 2 (salviagrön)",
+        "default": "#7A9E7E"
       },
       {
         "type": "color",
         "id": "color_primary",
         "label": "Primärfärg",
-        "default": "#2e7d32"
+        "default": "#C4704F"
+      },
+      {
+        "type": "color",
+        "id": "color_terracotta",
+        "label": "Terrakotta (primär accent)",
+        "default": "#C4704F"
+      },
+      {
+        "type": "color",
+        "id": "color_sage",
+        "label": "Salviagrön (sekundär accent)",
+        "default": "#7A9E7E"
+      },
+      {
+        "type": "color",
+        "id": "color_sand",
+        "label": "Sand / varm vit (bakgrund)",
+        "default": "#F5EFE6"
       }
     ]
   },
@@ -210,6 +228,12 @@
         "type": "checkbox",
         "id": "exit_intent_enabled",
         "label": "Aktivera exit-intent popup",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_newsletter",
+        "label": "Aktivera nyhetsbrevspopup",
         "default": true
       }
     ]

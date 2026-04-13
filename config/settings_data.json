@@ -36,5 +36,28 @@
       "page_width": 1200,
       "favicon": null
     }
+    "colors_text": "#212121",
+    "colors_background_1": "#ffffff",
+    "colors_background_2": "#F5EFE6",
+    "colors_background_1": "#F5EFE6",
+    "colors_background_2": "#ffffff",
+    "colors_solid_button_labels": "#ffffff",
+    "colors_outline_button_labels": "#C4704F",
+    "colors_accent_1": "#C4704F",
+    "colors_accent_2": "#7A9E7E",
+    "color_primary": "#C4704F",
+    "color_terracotta": "#C4704F",
+    "color_sage": "#7A9E7E",
+    "color_sand": "#F5EFE6",
+    "type_body_font": "inter_n4",
+    "type_header_font": "poppins_n7",
+    "page_width": 1200,
+    "spacing_sections": 0,
+    "logo_width": 160,
+    "cart_type": "drawer",
+    "cart_icon_with_count": true,
+    "free_shipping_threshold": 499,
+    "return_days": 30,
+    "exit_intent_enabled": true
   }
 }

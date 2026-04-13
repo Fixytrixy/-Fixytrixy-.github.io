@@ -1,0 +1,114 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "kicker": "Fixaotrixa",
+        "headline": "Stopp för kaos. Börja organisera.",
+        "subtext": "Sveriges smartaste förvaringslösningar för kök, sovrum, badrum och trädgård – levererade direkt hem till dig.",
+        "primary_cta_label": "Shoppa nu",
+        "primary_cta_url": "/collections/all",
+        "secondary_cta_label": "Hitta rätt produkt",
+        "secondary_cta_url": "#quiz-container",
+        "show_stats": true,
+        "stat1_value": 12000,
+        "stat1_label": "Nöjda kunder",
+        "stat2_value": 500,
+        "stat2_label": "Produkter",
+        "stat3_value": 4,
+        "stat3_label": "Genomsnittsbetyg"
+      }
+    },
+    "category-grid": {
+      "type": "category-grid",
+      "settings": {
+        "heading": "Organisera varje rum",
+        "subheading": "Välj ditt rum och hitta de perfekta förvaringslösningarna"
+      },
+      "blocks": {
+        "category-badrum": {
+          "type": "category",
+          "settings": {
+            "label": "Badrum",
+            "emoji": "🚿",
+            "description": "Smarta lösningar för badrummet",
+            "collection_handle": "badrum",
+            "collection_url": "/collections/badrum"
+          }
+        },
+        "category-kok": {
+          "type": "category",
+          "settings": {
+            "label": "Kök",
+            "emoji": "🍳",
+            "description": "Organisera ditt kök",
+            "collection_handle": "kok",
+            "collection_url": "/collections/kok"
+          }
+        },
+        "category-sovrum": {
+          "type": "category",
+          "settings": {
+            "label": "Sovrum",
+            "emoji": "🛏",
+            "description": "Förvaring för sovrummet",
+            "collection_handle": "sovrum",
+            "collection_url": "/collections/sovrum"
+          }
+        },
+        "category-garderob": {
+          "type": "category",
+          "settings": {
+            "label": "Garderob",
+            "emoji": "👗",
+            "description": "Maximera garderobsutrymmet",
+            "collection_handle": "garderob",
+            "collection_url": "/collections/garderob"
+          }
+        },
+        "category-hall": {
+          "type": "category",
+          "settings": {
+            "label": "Hall",
+            "emoji": "🚪",
+            "description": "Ordning i hallen",
+            "collection_handle": "hall",
+            "collection_url": "/collections/hall"
+          }
+        }
+      },
+      "blocks_order": [
+        "category-badrum",
+        "category-kok",
+        "category-sovrum",
+        "category-garderob",
+        "category-hall"
+      ]
+    },
+    "quiz": {
+      "type": "quiz",
+      "settings": {
+        "heading": "Hitta rätt produkt för dig",
+        "subheading": "Svara på 3 enkla frågor så hittar vi din perfekta förvaringslösning"
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Få exklusiva erbjudanden",
+        "subtext": "Prenumerera och få 10% rabatt på din första order"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "category-grid",
+    "quiz",
+    "testimonials",
+    "newsletter"
+  ]
+}
