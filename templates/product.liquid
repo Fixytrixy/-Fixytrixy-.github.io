@@ -69,7 +69,13 @@
         <form action="{{ routes.cart_add_url }}" method="post" class="product-form" id="product-form">
           <select name="id" id="variant-select">
             {%- for variant in product.variants -%}
-              <option value="{{ variant.id }}" {% if variant == product.selected_variant %}selected{% endif %}>
+              <option
+                value="{{ variant.id }}"
+                {% if variant == product.selected_variant %}selected{% endif %}
+                data-inventory-qty="{{ variant.inventory_quantity }}"
+                data-inventory-managed="{% if variant.inventory_management == 'shopify' %}true{% else %}false{% endif %}"
+                data-inventory-policy="{{ variant.inventory_policy }}"
+              >
                 {{ variant.title }} - {{ variant.price | money }}
               </option>
             {%- endfor -%}
@@ -79,6 +85,8 @@
             <label for="quantity">Antal:</label>
             <input type="number" name="quantity" id="quantity" value="1" min="1">
           </div>
+
+          {%- render 'urgency-badge', variant: product.selected_variant -%}
 
           <button type="submit" class="add-to-cart-btn">Lägg i kundvagn</button>
         </form>
@@ -152,6 +160,9 @@
     <button class="sticky-buy-bar__btn" id="sticky-buy-btn">Lägg i varukorg</button>
   </div>
 </div>
+{%- render 'sticky-buy-bar', product: product -%}
+
+<script src="{{ 'product-ui.js' | asset_url }}" defer></script>
 
 <style>
 .product-layout {
