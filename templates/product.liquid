@@ -6,6 +6,10 @@
   "image": "{{ product.featured_image | image_url: width: 800 }}",
   "description": "{{ product.description | escape | strip_html | truncatewords: 30 }}",
   "sku": "{{ product.selected_variant.sku }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "Fixaotrixa"
+  },
   "offers": {
     "@type": "Offer",
     "price": "{{ product.price | money_without_currency | strip_html | remove: ',' }}",
@@ -53,14 +57,23 @@
 
       <div class="product-info">
         <h1>{{ product.title }}</h1>
-        <div class="price">{{ product.price | money }}</div>
+        <div class="price product-page__price-current">{{ product.price | money }}</div>
+
+        {%- comment -%} Urgency / scarcity indicator {%- endcomment -%}
+        {%- assign inventory = product.selected_or_first_available_variant.inventory_quantity -%}
+        {%- if product.selected_or_first_available_variant.inventory_management == 'shopify' and inventory <= 5 and inventory > 0 -%}
+          <p class="urgency-badge">
+            <span class="urgency-pulse"></span>
+            ⚡ Endast {{ inventory }} kvar i lager!
+          </p>
+        {%- endif -%}
 
         <div class="product-description">
           {{ product.description }}
         </div>
 
-        <form action="{{ routes.cart_add_url }}" method="post" class="product-form">
-          <select name="id" id="variant-select">
+        <form action="{{ routes.cart_add_url }}" method="post" class="product-form" data-type="add-to-cart-form" id="product-form-{{ product.id }}">
+          <select name="id" id="variant-select" class="product-form__option-select">
             {%- for variant in product.variants -%}
               <option value="{{ variant.id }}" {% if variant == product.selected_variant %}selected{% endif %}>
                 {{ variant.title }} - {{ variant.price | money }}
@@ -73,8 +86,18 @@
             <input type="number" name="quantity" id="quantity" value="1" min="1">
           </div>
 
-          <button type="submit" class="add-to-cart-btn">Lägg i kundvagn</button>
+          <button type="submit" name="add" class="add-to-cart-btn" id="main-atc-btn">
+            <span>Lägg i kundvagn</span>
+          </button>
         </form>
+
+        {%- comment -%} Trust badges below ATC button {%- endcomment -%}
+        <div class="trust-badges">
+          <div class="trust-badge">🚚 <span>Fri frakt över 499 kr</span></div>
+          <div class="trust-badge">🔄 <span>30 dagars öppet köp</span></div>
+          <div class="trust-badge">🔒 <span>Säker betalning</span></div>
+          <div class="trust-badge">⭐ <span>Över 500 nöjda kunder</span></div>
+        </div>
 
         <div class="product-meta">
           <p><strong>Leveranstid:</strong> 1-3 arbetsdagar</p>
@@ -92,6 +115,38 @@
         <p>Inga recensioner än. Bli den första att recensera denna produkt!</p>
       {%- endif -%}
     </div>
+
+    {%- comment -%} Upsell: "Köps ofta tillsammans" carousel {%- endcomment -%}
+    {%- assign upsell_collection = product.collections.first -%}
+    {%- if upsell_collection != blank -%}
+      {%- assign related_count = 0 -%}
+      {%- for rp in upsell_collection.products limit: 8 -%}
+        {%- unless rp.id == product.id -%}
+          {%- assign related_count = related_count | plus: 1 -%}
+        {%- endunless -%}
+      {%- endfor -%}
+      {%- if related_count > 0 -%}
+        <section class="upsell-section">
+          <h3>Köps ofta tillsammans</h3>
+          <div class="upsell-grid">
+            {%- assign shown = 0 -%}
+            {%- for item in upsell_collection.products limit: 8 -%}
+              {%- unless item.id == product.id or shown >= 4 -%}
+                <div class="upsell-card">
+                  <a href="{{ item.url }}">
+                    <img src="{{ item.featured_image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ item.title | escape }}" width="300" height="300" loading="lazy">
+                  </a>
+                  <p class="upsell-title">{{ item.title | truncate: 40 }}</p>
+                  <p class="upsell-price">{{ item.price | money }}</p>
+                  <a href="{{ item.url }}" class="btn btn--small">Lägg till</a>
+                </div>
+                {%- assign shown = shown | plus: 1 -%}
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        </section>
+      {%- endif -%}
+    {%- endif -%}
 
     <div class="related-products">
       <h2>Relaterade produkter</h2>
@@ -113,6 +168,18 @@
   </div>
 </div>
 
+{%- comment -%} Sticky mobile buy button {%- endcomment -%}
+<div class="sticky-atc" id="sticky-atc" aria-hidden="true">
+  <span class="sticky-atc__title">{{ product.title | truncate: 30 }}</span>
+  <span class="sticky-atc__price">{{ product.price | money }}</span>
+  <form action="{{ routes.cart_add_url }}" method="post" data-type="add-to-cart-form" class="sticky-atc__form">
+    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+    <button type="submit" name="add" class="sticky-atc__btn">
+      <span>Lägg i varukorg</span>
+    </button>
+  </form>
+</div>
+
 <style>
 .product-layout {
   display: grid;
@@ -131,11 +198,40 @@
   margin-bottom: 1rem;
 }
 
-.price {
+.price, .product-page__price-current {
   font-size: 2rem;
   font-weight: bold;
   color: {{ settings.color_primary }};
   margin-bottom: 2rem;
+}
+
+/* Urgency badge */
+.urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #C4704F;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: #fff4f0;
+  border: 1.5px solid #C4704F;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.urgency-pulse {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #C4704F;
+  border-radius: 50%;
+  animation: urgency-pulse-anim 1.4s infinite;
+}
+
+@keyframes urgency-pulse-anim {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.6; }
 }
 
 .product-description {
@@ -144,7 +240,7 @@
 }
 
 .product-form {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .product-form select, .product-form input {
@@ -174,8 +270,26 @@
 }
 
 .add-to-cart-btn:hover {
-  background-color: #45a049;
+  background-color: #a55a3a;
 }
+
+/* Trust badges */
+.trust-badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  color: #555;
+}
+
+.trust-badge span { font-weight: 500; }
 
 .product-meta {
   background-color: #f9f9f9;
@@ -197,9 +311,163 @@
   margin-top: 2rem;
 }
 
+/* Upsell section */
+.upsell-section {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid #eee;
+}
+
+.upsell-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #2C2C2C;
+}
+
+.upsell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.upsell-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+  text-align: center;
+  padding-bottom: 1rem;
+  transition: transform 0.25s;
+}
+
+.upsell-card:hover { transform: translateY(-3px); }
+
+.upsell-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.upsell-title {
+  font-size: 0.88rem;
+  color: #333;
+  padding: 0.5rem 0.75rem 0;
+  line-height: 1.4;
+}
+
+.upsell-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #C4704F;
+  margin-bottom: 0.5rem;
+}
+
+.btn--small {
+  display: inline-block;
+  background: #C4704F;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn--small:hover { background: #a55a3a; }
+
+/* Sticky mobile ATC */
+.sticky-atc {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 2px solid #C4704F;
+  padding: 0.75rem 1rem;
+  z-index: 9000;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+}
+
+.sticky-atc--visible {
+  display: flex;
+}
+
+.sticky-atc__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2C2C2C;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sticky-atc__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #C4704F;
+  white-space: nowrap;
+}
+
+.sticky-atc__form { display: flex; }
+
+.sticky-atc__btn {
+  background: #C4704F;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.sticky-atc__btn:hover { background: #a55a3a; }
+
 @media (max-width: 768px) {
   .product-layout {
     grid-template-columns: 1fr;
   }
+
+  .trust-badges {
+    grid-template-columns: 1fr;
+  }
+
+  .upsell-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
+
+<script>
+(function() {
+  /* ---- Sticky ATC: show after user scrolls past main button ---- */
+  var stickyBar  = document.getElementById('sticky-atc');
+  var mainBtn    = document.getElementById('main-atc-btn');
+  if (!stickyBar || !mainBtn) return;
+
+  function checkScroll() {
+    var rect = mainBtn.getBoundingClientRect();
+    /* Show sticky bar once the main ATC button is scrolled out of viewport */
+    if (rect.bottom < 0) {
+      stickyBar.classList.add('sticky-atc--visible');
+      stickyBar.removeAttribute('aria-hidden');
+    } else {
+      stickyBar.classList.remove('sticky-atc--visible');
+      stickyBar.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+}());
+</script>
