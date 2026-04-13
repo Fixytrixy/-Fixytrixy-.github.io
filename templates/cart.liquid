@@ -115,6 +115,42 @@
               <p>Fri frakt över 499 SEK</p>
             </div>
 
+            {%- comment -%} Free shipping progress bar {%- endcomment -%}
+            {%- assign free_shipping_threshold = 49900 -%}
+            {%- assign remaining_for_free_shipping = free_shipping_threshold | minus: cart.total_price -%}
+            <div class="free-shipping-bar">
+              {%- if cart.total_price >= free_shipping_threshold -%}
+                <p class="free-shipping-bar__msg free-shipping-bar__msg--achieved">
+                  🎉 Grattis! Du har fri frakt!
+                </p>
+              {%- else -%}
+                <p class="free-shipping-bar__msg">
+                  Du är <strong>{{ remaining_for_free_shipping | money }}</strong> från gratis frakt!
+                </p>
+              {%- endif -%}
+              <div class="free-shipping-bar__track" role="progressbar" aria-valuenow="{{ cart.total_price }}" aria-valuemin="0" aria-valuemax="{{ free_shipping_threshold }}">
+                <div
+                  class="free-shipping-bar__fill {% if cart.total_price >= free_shipping_threshold %}free-shipping-bar__fill--complete{% endif %}"
+                  style="width: {{ cart.total_price | times: 100 | divided_by: free_shipping_threshold | at_most: 100 }}%"
+                ></div>
+              </div>
+            </div>
+
+            {%- comment -%} Bundle discount upsell message {%- endcomment -%}
+            {%- if cart.item_count >= 3 -%}
+              <div class="bundle-deal bundle-deal--active">
+                🎉 Köp 3, betala för 2 — rabatt tillämpas i kassan!
+              </div>
+            {%- elsif cart.item_count == 2 -%}
+              <div class="bundle-deal">
+                Lägg till <strong>1 produkt till</strong> och få Köp 3, betala för 2 🎉
+              </div>
+            {%- elsif cart.item_count == 1 -%}
+              <div class="bundle-deal">
+                Lägg till <strong>2 produkter till</strong> och få Köp 3, betala för 2 🎉
+              </div>
+            {%- endif -%}
+
             <div class="cart-actions">
               <a href="{{ routes.checkout_url }}" class="checkout-btn">Till kassan</a>
               <a href="{{ routes.all_products_collection_url }}" class="continue-shopping">Fortsätt handla</a>
@@ -418,10 +454,67 @@
   background-color: #f9f9f9;
   padding: 1rem;
   border-radius: 8px;
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0.75rem;
   text-align: center;
   font-size: 0.9rem;
   color: #666;
+}
+
+/* Free shipping progress bar */
+.free-shipping-bar {
+  margin: 0 0 1.5rem;
+  background: #F5EFE6;
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+}
+
+.free-shipping-bar__msg {
+  font-size: 0.88rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.free-shipping-bar__msg--achieved {
+  color: #7A9E7E;
+  font-weight: 700;
+}
+
+.free-shipping-bar__track {
+  background: #ddd;
+  border-radius: 100px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.free-shipping-bar__fill {
+  height: 100%;
+  background: #C4704F;
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.free-shipping-bar__fill--complete {
+  background: #7A9E7E;
+}
+
+/* Bundle deal upsell */
+.bundle-deal {
+  background: #fff8f5;
+  border: 1.5px dashed #C4704F;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.bundle-deal--active {
+  background: #fff;
+  border-color: #7A9E7E;
+  color: #7A9E7E;
+  font-weight: 700;
 }
 
 .cart-actions {

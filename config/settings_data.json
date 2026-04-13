@@ -10,6 +10,32 @@
     "role": "main"
   },
   "current": {
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {
+          "announcement_text": "Fri frakt över 499 kr • Klarna & Swish • 30 dagars öppet köp"
+        }
+      }
+    },
+    "settings": {
+      "color_primary": "#C4704F",
+      "colors_text": "#2C2C2C",
+      "colors_background_1": "#FFFFFF",
+      "colors_background_2": "#F5EFE6",
+      "colors_solid_button_labels": "#FFFFFF",
+      "colors_outline_button_labels": "#C4704F",
+      "colors_accent_1": "#C4704F",
+      "colors_accent_2": "#7A9E7E",
+      "color_terracotta": "#C4704F",
+      "color_sage": "#7A9E7E",
+      "color_sand": "#F5EFE6",
+      "enable_newsletter": true,
+      "type_body_font": "inter_n4",
+      "type_header_font": "poppins_n7",
+      "page_width": 1200,
+      "favicon": null
+    }
     "colors_text": "#212121",
     "colors_background_1": "#ffffff",
     "colors_background_2": "#F5EFE6",

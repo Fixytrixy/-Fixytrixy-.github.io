@@ -7,19 +7,40 @@
   <meta name="theme-color" content="{{ settings.color_primary }}">
 
   <title>
-    {{ page_title }}
-    {%- if current_tags -%}
-      – tagged "{{ current_tags | join: ', ' }}"
+    {%- if template == 'index' -%}
+      Förvaringslösningar för hemmet | Fixaotrixa Sverige
+    {%- elsif template contains 'collection' -%}
+      {{ collection.title }} | Smarta förvaringslösningar | Fixaotrixa
+    {%- elsif template contains 'product' -%}
+      {{ product.title }} | Köp online | Fixaotrixa
+    {%- elsif template contains 'article' -%}
+      {{ article.title }} | Fixaotrixa Blogg
+    {%- elsif template contains 'blog' -%}
+      Tips &amp; Inspiration | Fixaotrixa Blogg
+    {%- elsif template contains 'cart' -%}
+      Kundvagn | Fixaotrixa
+    {%- else -%}
+      {{ page_title }}
+      {%- unless page_title contains shop.name -%} | Fixaotrixa{%- endunless -%}
     {%- endif -%}
-    {%- if current_page != 1 -%}
-      – Page {{ current_page }}
-    {%- endif -%}
-    {%- unless page_title contains shop.name -%}
-      – {{ shop.name }}
-    {%- endunless -%}
+    {%- if current_page != 1 -%} – Sida {{ current_page }}{%- endif -%}
   </title>
 
-  {% assign seo_description = page_description | default: collection.description | default: shop.meta_description | default: shop.description %}
+  {%- if template == 'index' -%}
+    {%- assign seo_description = 'Sveriges smartaste förvaringslösningar för badrum, kök, sovrum och garderob. Fri frakt över 499 kr. Handla online idag!' -%}
+  {%- elsif template contains 'collection' -%}
+    {%- assign seo_description = 'Handla ' | append: collection.title | downcase | append: ' online. Smarta och prisvärda lösningar för ett organiserat hem. Fri frakt över 499 kr.' -%}
+    {%- if collection.description != blank -%}
+      {%- assign seo_description = collection.description | strip_html | truncate: 155 -%}
+    {%- endif -%}
+  {%- elsif template contains 'product' -%}
+    {%- assign seo_description = product.description | strip_html | truncate: 155 -%}
+    {%- if seo_description == blank -%}
+      {%- assign seo_description = product.title | append: ' – Köp online hos Fixaotrixa. Fri frakt över 499 kr och 30 dagars öppet köp.' -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- assign seo_description = page_description | default: shop.meta_description | default: shop.description | default: 'Sveriges smartaste förvaringslösningar för hemmet. Fri frakt över 499 kr.' -%}
+  {%- endif -%}
   <meta name="description" content="{{ seo_description | escape }}">
   <meta name="robots" content="index, follow">
 
@@ -178,5 +199,7 @@
       </div>
     </div>
   {%- endif -%}
+
+  {% render 'email-popup' %}
 </body>
 </html>
