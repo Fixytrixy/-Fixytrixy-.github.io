@@ -1,0 +1,266 @@
+{% comment %}
+  Email capture popup with 10% discount offer.
+  Shows after 8 seconds or on exit intent (mouse leaving viewport).
+  Only shows once per session. Does not show on checkout pages.
+{% endcomment %}
+
+{%- unless template contains 'checkout' -%}
+<div class="popup-overlay" id="email-popup" style="display:none" role="dialog" aria-modal="true" aria-labelledby="email-popup-heading" aria-hidden="true">
+  <div class="popup-modal">
+    <button class="popup-close" id="popup-close" aria-label="Stäng">&#10005;</button>
+    <div class="popup-content-inner">
+      <div class="popup-icon">🌿</div>
+      <h2 id="email-popup-heading" class="popup-heading">Få 10% rabatt på din första order</h2>
+      <p class="popup-text">Prenumerera på vårt nyhetsbrev och få en exklusiv rabattkod direkt i din inkorg.</p>
+
+      <div id="popup-form-wrap">
+        <form id="email-popup-form" class="popup-form" novalidate>
+          <input
+            type="email"
+            id="popup-email-input"
+            name="email"
+            class="popup-input"
+            placeholder="Din e-postadress"
+            required
+            autocomplete="email"
+          >
+          <button type="submit" class="popup-submit-btn">Hämta min rabatt &rarr;</button>
+        </form>
+        <p class="popup-footer-note">
+          <a href="#" id="popup-decline" class="popup-decline-link">Nej tack, jag vill inte spara pengar.</a>
+        </p>
+      </div>
+
+      <div id="popup-success" class="popup-success" style="display:none">
+        <p class="popup-success-msg">Kolla din inkorg! Din kod är på väg 🎉</p>
+        <p class="popup-code-display">Använd koden <strong>VÄLKOMMEN10</strong> i kassan.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.popup-modal {
+  position: relative;
+  background: #F5EFE6;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: popup-slide-in 0.35s ease;
+}
+
+@keyframes popup-slide-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.popup-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: #C4704F;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.popup-close:hover { background: #a55a3a; }
+
+.popup-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.popup-heading {
+  font-size: 1.5rem;
+  color: #2C2C2C;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.popup-text {
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.popup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.popup-input {
+  padding: 0.875rem 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.popup-input:focus {
+  outline: none;
+  border-color: #C4704F;
+}
+
+.popup-submit-btn {
+  background: #C4704F;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.popup-submit-btn:hover { background: #a55a3a; }
+
+.popup-footer-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.popup-decline-link {
+  color: #999;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.popup-decline-link:hover { color: #666; }
+
+.popup-success {
+  padding: 1rem 0;
+}
+
+.popup-success-msg {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2C2C2C;
+  margin-bottom: 0.75rem;
+}
+
+.popup-code-display {
+  background: #fff;
+  border: 2px dashed #C4704F;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.popup-code-display strong {
+  color: #C4704F;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+  .popup-modal { padding: 2rem 1.25rem; }
+  .popup-heading { font-size: 1.25rem; }
+}
+</style>
+
+<script>
+(function() {
+  var STORAGE_KEY = 'fxa_email_popup_shown';
+  var DELAY_MS    = 8000;
+
+  if (sessionStorage.getItem(STORAGE_KEY)) return;
+
+  var overlay   = document.getElementById('email-popup');
+  var closeBtn  = document.getElementById('popup-close');
+  var declineEl = document.getElementById('popup-decline');
+  var form      = document.getElementById('email-popup-form');
+  var formWrap  = document.getElementById('popup-form-wrap');
+  var success   = document.getElementById('popup-success');
+  var hasShown  = false;
+
+  if (!overlay) return;
+
+  function show() {
+    if (hasShown) return;
+    hasShown = true;
+    sessionStorage.setItem(STORAGE_KEY, '1');
+    overlay.style.display = 'flex';
+    overlay.removeAttribute('aria-hidden');
+  }
+
+  function hide() {
+    overlay.style.display = 'none';
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  /* Timer trigger */
+  var timer = setTimeout(show, DELAY_MS);
+
+  /* Exit-intent trigger */
+  document.addEventListener('mouseleave', function(e) {
+    if (e.clientY <= 0) { clearTimeout(timer); show(); }
+  });
+
+  closeBtn.addEventListener('click', hide);
+  if (declineEl) declineEl.addEventListener('click', function(e) { e.preventDefault(); hide(); });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) hide();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hide();
+  });
+
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var emailInput = document.getElementById('popup-email-input');
+      var email = emailInput ? emailInput.value.trim() : '';
+      if (!email) return;
+
+      /* Klaviyo integration */
+      if (window._learnq && typeof window._learnq.push === 'function') {
+        window._learnq.push(['identify', { '$email': email }]);
+        window._learnq.push(['track', 'Newsletter Signup', { discount_code: 'VÄLKOMMEN10' }]);
+      }
+
+      /* GA4 integration */
+      if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { value: 1, currency: 'SEK' });
+      }
+
+      /* Show success state */
+      formWrap.style.display = 'none';
+      success.style.display  = 'block';
+
+      /* Auto-close after 4 seconds */
+      setTimeout(hide, 4000);
+    });
+  }
+}());
+</script>
+{%- endunless -%}

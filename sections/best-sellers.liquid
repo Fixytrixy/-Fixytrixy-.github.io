@@ -1,0 +1,278 @@
+<section class="best-sellers-section sa" id="best-sellers">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-header sa">
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p>{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- assign bs_collection = collections[section.settings.collection] -%}
+    {%- if bs_collection != blank -%}
+      <div class="best-sellers-grid">
+        {%- for product in bs_collection.products limit: section.settings.products_to_show -%}
+          <div class="best-seller-card">
+            <a href="{{ product.url }}" class="best-seller-card__image-link">
+              {%- if product.featured_image != blank -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 400, height: 400, crop: 'center' }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <div class="best-seller-card__placeholder">
+                  <span>{{ product.title | truncate: 20 }}</span>
+                </div>
+              {%- endif -%}
+              {%- if product.compare_at_price > product.price -%}
+                <span class="best-seller-badge best-seller-badge--sale">REA</span>
+              {%- else -%}
+                <span class="best-seller-badge best-seller-badge--top">⭐ Bästsäljare</span>
+              {%- endif -%}
+            </a>
+
+            <div class="best-seller-card__info">
+              <h3 class="best-seller-card__title">
+                <a href="{{ product.url }}">{{ product.title | escape }}</a>
+              </h3>
+
+              <div class="best-seller-card__rating">
+                {%- assign rating_value = product.metafields.reviews.rating.value | default: 4.8 -%}
+                <span class="rating-stars" aria-label="{{ rating_value }} av 5 stjärnor">
+                  {%- for i in (1..5) -%}
+                    {%- if rating_value >= i -%}<span class="star star--full">★</span>
+                    {%- else -%}<span class="star star--empty">☆</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </span>
+              </div>
+
+              <div class="best-seller-card__price">
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="price-original">{{ product.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span class="price-current">{{ product.price | money }}</span>
+              </div>
+
+              <form action="{{ routes.cart_add_url }}" method="post" class="best-seller-card__form" data-type="add-to-cart-form">
+                <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                <button type="submit" name="add" class="btn btn--primary btn--full">
+                  <span>Lägg i varukorg</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.show_view_all -%}
+        <div class="best-sellers-cta">
+          <a href="{{ bs_collection.url }}" class="btn btn--secondary">Visa alla bästsäljare &rarr;</a>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <p class="best-sellers-empty">Inga produkter hittades. Välj en kollektion i temat-editorn.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+.best-sellers-section {
+  padding: 4rem 0;
+  background: #fff;
+}
+
+.best-sellers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.best-seller-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.best-seller-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(196,112,79,0.15);
+}
+
+.best-seller-card__image-link {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.best-seller-card__image-link img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.best-seller-card:hover .best-seller-card__image-link img {
+  transform: scale(1.04);
+}
+
+.best-seller-card__placeholder {
+  width: 100%;
+  height: 250px;
+  background: #F5EFE6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.best-seller-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 0.25rem 0.625rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.best-seller-badge--top {
+  background: #C4704F;
+  color: #fff;
+}
+
+.best-seller-badge--sale {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.best-seller-card__info {
+  padding: 1.25rem;
+}
+
+.best-seller-card__title {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.best-seller-card__title a {
+  text-decoration: none;
+  color: #2C2C2C;
+  transition: color 0.2s;
+}
+
+.best-seller-card__title a:hover { color: #C4704F; }
+
+.best-seller-card__rating {
+  margin-bottom: 0.5rem;
+}
+
+.rating-stars { display: inline-flex; gap: 1px; }
+
+.star--full  { color: #F5A623; font-size: 1rem; }
+.star--empty { color: #ddd;    font-size: 1rem; }
+
+.best-seller-card__price {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.price-original {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.price-current {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #C4704F;
+}
+
+.btn--full { width: 100%; text-align: center; }
+
+.best-sellers-cta {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.best-sellers-empty {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .best-sellers-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .best-seller-card__image-link img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .best-sellers-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Bästsäljare",
+  "tag": "section",
+  "class": "section-best-sellers",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Våra bästsäljare"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Produkterna som svenska hem älskar"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Välj kollektion (t.ex. Best Sellers)"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Antal produkter att visa",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Visa länk till alla produkter",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bästsäljare"
+    }
+  ]
+}
+{% endschema %}

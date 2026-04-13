@@ -1,196 +1,114 @@
 {
   "sections": {
     "hero": {
-      "type": "hero-banner",
+      "type": "hero",
       "settings": {
-        "overlay_opacity": 40,
-        "min_height": 600,
-        "subheading": "Sveriges bästa förvaringslösningar",
-        "heading": "Förvandla ditt hem från rörigt till organiserat",
-        "description": "<p>Hitta smarta förvaringslösningar för kök, sovrum, badrum och mer. Gratis frakt över 499 kr.</p>",
-        "text_alignment": "left",
-        "button_label": "Shoppa nu",
-        "button_link": "/collections/all",
-        "button_label_2": "Ta quizet",
-        "button_link_2": "#quiz-section",
-        "review_count": 1247,
-        "customer_count": 8500,
-        "full_width": true,
-        "show_before_after": true
+        "kicker": "Fixaotrixa",
+        "headline": "Stopp för kaos. Börja organisera.",
+        "subtext": "Sveriges smartaste förvaringslösningar för kök, sovrum, badrum och trädgård – levererade direkt hem till dig.",
+        "primary_cta_label": "Shoppa nu",
+        "primary_cta_url": "/collections/all",
+        "secondary_cta_label": "Hitta rätt produkt",
+        "secondary_cta_url": "#quiz-container",
+        "show_stats": true,
+        "stat1_value": 12000,
+        "stat1_label": "Nöjda kunder",
+        "stat2_value": 500,
+        "stat2_label": "Produkter",
+        "stat3_value": 4,
+        "stat3_label": "Genomsnittsbetyg"
       }
     },
-    "categories": {
+    "category-grid": {
       "type": "category-grid",
+      "settings": {
+        "heading": "Organisera varje rum",
+        "subheading": "Välj ditt rum och hitta de perfekta förvaringslösningarna"
+      },
       "blocks": {
-        "kok": {
+        "category-badrum": {
           "type": "category",
           "settings": {
-            "emoji": "🍳",
-            "title": "Köksförvaring",
-            "description": "Skåporganisatörer, kryddhyllor & diskställ",
-            "link": "/collections/koksforvaring",
-            "product_count": "120+"
-          }
-        },
-        "sovrum": {
-          "type": "category",
-          "settings": {
-            "emoji": "🛏️",
-            "title": "Sovrumsförvaring",
-            "description": "Garderobsorganisatörer & lådinsatser",
-            "link": "/collections/sovrumsforvaring",
-            "product_count": "95+"
-          }
-        },
-        "badrum": {
-          "type": "category",
-          "settings": {
+            "label": "Badrum",
             "emoji": "🚿",
-            "title": "Badrumsförvaring",
-            "description": "Duschhyllor & sminkorganisatörer",
-            "link": "/collections/badrumsforvaring",
-            "product_count": "80+"
+            "description": "Smarta lösningar för badrummet",
+            "collection_handle": "badrum",
+            "collection_url": "/collections/badrum"
           }
         },
-        "tradgard": {
+        "category-kok": {
           "type": "category",
           "settings": {
-            "emoji": "🌿",
-            "title": "Trädgårdsförvaring",
-            "description": "Redskapsförråd & utomhusboxar",
-            "link": "/collections/tradgardsforvaring",
-            "product_count": "60+"
+            "label": "Kök",
+            "emoji": "🍳",
+            "description": "Organisera ditt kök",
+            "collection_handle": "kok",
+            "collection_url": "/collections/kok"
           }
         },
-        "hall": {
+        "category-sovrum": {
           "type": "category",
           "settings": {
-            "emoji": "👟",
-            "title": "Hallförvaring",
-            "description": "Skoställ, krokpaneler & entréhyllor",
-            "link": "/collections/hallforvaring",
-            "product_count": "75+"
+            "label": "Sovrum",
+            "emoji": "🛏",
+            "description": "Förvaring för sovrummet",
+            "collection_handle": "sovrum",
+            "collection_url": "/collections/sovrum"
           }
         },
-        "kontor": {
+        "category-garderob": {
           "type": "category",
           "settings": {
-            "emoji": "💼",
-            "title": "Kontorsförvaring",
-            "description": "Skrivbordsorganisatörer & hyllsystem",
-            "link": "/collections/kontorsforvaring",
-            "product_count": "85+"
+            "label": "Garderob",
+            "emoji": "👗",
+            "description": "Maximera garderobsutrymmet",
+            "collection_handle": "garderob",
+            "collection_url": "/collections/garderob"
+          }
+        },
+        "category-hall": {
+          "type": "category",
+          "settings": {
+            "label": "Hall",
+            "emoji": "🚪",
+            "description": "Ordning i hallen",
+            "collection_handle": "hall",
+            "collection_url": "/collections/hall"
           }
         }
       },
-      "block_order": ["kok", "sovrum", "badrum", "tradgard", "hall", "kontor"],
-      "settings": {
-        "heading": "Shoppa efter rum",
-        "subheading": "Hitta rätt förvaringslösning för varje rum i ditt hem",
-        "show_all_link": true
-      }
-    },
-    "did_you_know": {
-      "type": "did-you-know",
-      "blocks": {
-        "fact1": {
-          "type": "fact",
-          "settings": {
-            "emoji": "😰",
-            "stat": "67%",
-            "title": "Känner sig stressade",
-            "description": "av personer med rörigt hem upplever ökad stress och ångest dagligen."
-          }
-        },
-        "fact2": {
-          "type": "fact",
-          "settings": {
-            "emoji": "⏰",
-            "stat": "55 min",
-            "title": "Tid slösad per dag",
-            "description": "lägger en genomsnittlig person på att leta efter borttappade föremål varje dag."
-          }
-        },
-        "fact3": {
-          "type": "fact",
-          "settings": {
-            "emoji": "💰",
-            "stat": "4 200 kr",
-            "title": "Köpt dubbelt",
-            "description": "köper en genomsnittlig svensk familj om per år av föremål de redan har men inte hittar."
-          }
-        },
-        "fact4": {
-          "type": "fact",
-          "settings": {
-            "emoji": "😊",
-            "stat": "89%",
-            "title": "Mår bättre",
-            "description": "av våra kunder rapporterar att de känner sig mer avslappnade och produktiva efter organisering."
-          }
-        }
-      },
-      "block_order": ["fact1", "fact2", "fact3", "fact4"],
-      "settings": {
-        "heading": "Visste du att..."
-      }
+      "blocks_order": [
+        "category-badrum",
+        "category-kok",
+        "category-sovrum",
+        "category-garderob",
+        "category-hall"
+      ]
     },
     "quiz": {
-      "type": "quiz-section",
+      "type": "quiz",
       "settings": {
-        "heading": "Vilket rum ska vi fixa?",
-        "subheading": "Svara på 3 frågor så hittar vi rätt förvaringslösning för dig"
+        "heading": "Hitta rätt produkt för dig",
+        "subheading": "Svara på 3 enkla frågor så hittar vi din perfekta förvaringslösning"
       }
     },
     "testimonials": {
       "type": "testimonials",
-      "blocks": {
-        "review1": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "verified": true,
-            "title": "Helt förvandlat mitt kök!",
-            "text": "Köpte köksorganisatören och nu är mitt skafferi ett nöje att titta in i. Superenkel montering och riktigt bra kvalitet för priset.",
-            "author": "Anna L.",
-            "location": "Stockholm",
-            "date": "mars 2024"
-          }
-        },
-        "review2": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "verified": true,
-            "title": "Äntligen ordning i garderoben!",
-            "text": "Köpt garderobssystemet och det är det bästa jag gjort. Allt har sin plats och jag hittar kläder på en sekund. Rekommenderas varmt!",
-            "author": "Erik S.",
-            "location": "Göteborg",
-            "date": "februari 2024"
-          }
-        },
-        "review3": {
-          "type": "review",
-          "settings": {
-            "rating": 5,
-            "verified": true,
-            "title": "Perfekt för litet badrum",
-            "text": "Duschhyllan passar perfekt och ser jättesnygg ut. Rostfritt och hålls rent enkelt. Snabb leverans på 3 dagar!",
-            "author": "Maria K.",
-            "location": "Malmö",
-            "date": "april 2024"
-          }
-        }
-      },
-      "block_order": ["review1", "review2", "review3"],
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
       "settings": {
-        "heading": "Vad våra kunder säger",
-        "subheading": "Tusentals nöjda kunder i hela Sverige",
-        "overall_rating": "4.8",
-        "total_reviews": "1 247",
-        "cta_label": "Läs alla recensioner"
+        "heading": "Få exklusiva erbjudanden",
+        "subtext": "Prenumerera och få 10% rabatt på din första order"
       }
     }
   },
-  "order": ["hero", "categories", "did_you_know", "quiz", "testimonials"]
+  "order": [
+    "hero",
+    "category-grid",
+    "quiz",
+    "testimonials",
+    "newsletter"
+  ]
 }

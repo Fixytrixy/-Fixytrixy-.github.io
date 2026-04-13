@@ -1,0 +1,116 @@
+<section class="featured-collections" id="collections">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-header sa">
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p>{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="collections-grid">
+      {%- for block in section.blocks -%}
+        {%- assign col = collections[block.settings.collection] -%}
+        <a
+          href="{{ col.url | default: block.settings.collection_url }}"
+          class="collection-card sa sa-d{{ forloop.index }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="collection-card__image">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 600 }}"
+                alt="{{ block.settings.image.alt | default: block.settings.label }}"
+                width="600"
+                loading="lazy"
+                data-src="{{ block.settings.image | image_url: width: 600 }}"
+              >
+            {%- elsif col != blank and col.image != blank -%}
+              <img
+                src="{{ col.image | image_url: width: 600 }}"
+                alt="{{ col.title }}"
+                width="600"
+                loading="lazy"
+                data-src="{{ col.image | image_url: width: 600 }}"
+              >
+            {%- else -%}
+              <div class="collection-card__placeholder">
+                <span>{{ block.settings.label | default: col.title }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+          <div class="collection-card__info">
+            <h3>{{ block.settings.label | default: col.title }}</h3>
+            {%- if col != blank -%}
+              <span class="collection-card__count">{{ col.products_count }} produkter</span>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Utvalda kategorier",
+  "tag": "section",
+  "class": "section-featured-collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Hitta din förvaringslösning"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Välj rum och vi hjälper dig organisera"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Kategori",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Kollektion"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etiketttext"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Anpassad bild"
+        },
+        {
+          "type": "url",
+          "id": "collection_url",
+          "label": "Manuell URL (om kollektion saknas)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Utvalda kategorier",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

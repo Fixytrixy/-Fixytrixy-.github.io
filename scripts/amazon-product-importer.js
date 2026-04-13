@@ -45,7 +45,10 @@ function loadEnv() {
   });
 }
 
-loadEnv();
+/* ─── Load .env only when this file is the entry point ─── */
+if (require.main === module) {
+  loadEnv();
+}
 
 const SHOPIFY_STORE   = process.env.SHOPIFY_STORE_URL;
 const SHOPIFY_TOKEN   = process.env.SHOPIFY_ACCESS_TOKEN;
@@ -303,7 +306,25 @@ async function main() {
   console.log('✅ Import klar! Totalt importerade: ' + totalImported + ' produkter.');
 }
 
-main().catch(function (err) {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(function (err) {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+}
+
+/* ─── Exports (for testing) ─── */
+module.exports = {
+  sign,
+  getSigningKey,
+  buildAmazonRequest,
+  loadEnv,
+  httpsRequest,
+  searchAmazonProducts,
+  shopifyRequest,
+  ensureCollection,
+  createProduct,
+  CATEGORIES,
+  MIN_RATING,
+  MIN_REVIEWS
+};

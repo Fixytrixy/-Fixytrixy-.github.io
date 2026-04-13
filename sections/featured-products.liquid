@@ -1,0 +1,101 @@
+<section class="featured-products">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-header sa">
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p>{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="products-grid">
+      {%- if section.settings.collection != blank -%}
+        {%- assign feat_col = collections[section.settings.collection] -%}
+        {%- for product in feat_col.products limit: section.settings.products_to_show -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.product != blank -%}
+            {% render 'product-card', product: block.settings.product %}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.cta_label != blank -%}
+      <div class="section-cta sa">
+        <a href="{{ section.settings.cta_url | default: '/collections/all' }}" class="btn btn--secondary">
+          {{ section.settings.cta_label }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Utvalda produkter",
+  "tag": "section",
+  "class": "section-featured-products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Bästsäljare"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Våra mest populära förvaringslösningar"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Kollektion (används om angiven)"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Antal produkter att visa",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Knapptext",
+      "default": "Se alla produkter"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Knapp-URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Produkt",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Produkt"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Utvalda produkter"
+    }
+  ]
+}
+{% endschema %}

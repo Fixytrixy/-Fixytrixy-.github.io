@@ -1,0 +1,487 @@
+<div class="article-page">
+  <div class="container">
+    <article class="blog-article">
+      <header class="article-header">
+        <h1>{{ article.title }}</h1>
+
+        <div class="article-meta">
+          <span class="article-date">{{ article.published_at | date: '%d %B %Y' }}</span>
+          {%- if article.author -%}
+            <span class="article-author">av {{ article.author }}</span>
+          {%- endif -%}
+          <span class="article-reading-time">Lästid: {{ article.content | strip_html | strip_newlines | size | divided_by: 500 | plus: 1 }} min</span>
+        </div>
+
+        {%- if article.image -%}
+          <div class="article-image">
+            <img src="{{ article.image | image_url: width: 800, height: 400, crop: 'center' }}" alt="{{ article.title }}" width="800" height="400">
+          </div>
+        {%- endif -%}
+      </header>
+
+      <div class="article-content">
+        {{ article.content }}
+      </div>
+
+      <footer class="article-footer">
+        <div class="article-tags">
+          {%- if article.tags.size > 0 -%}
+            <h3>Ämnen:</h3>
+            <div class="tags">
+              {%- for tag in article.tags -%}
+                <a href="/blogs/news/tagged/{{ tag | handle }}" class="tag">{{ tag }}</a>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="article-share">
+          <h3>Dela artikeln:</h3>
+          <div class="share-buttons">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}" target="_blank" class="share-btn facebook">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Facebook
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}&text={{ article.title | url_encode }}" target="_blank" class="share-btn twitter">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              Twitter
+            </a>
+            <a href="mailto:?subject={{ article.title | url_encode }}&body={{ shop.url }}{{ article.url }}" class="share-btn email">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+              E-post
+            </a>
+          </div>
+        </div>
+      </footer>
+    </article>
+
+    <aside class="article-sidebar">
+      <div class="sidebar-section">
+        <h3>Relaterade artiklar</h3>
+        <div class="related-articles">
+          {%- for related_article in blog.articles limit: 3 -%}
+            {%- if related_article != article -%}
+              <div class="related-article">
+                {%- if related_article.image -%}
+                  <img src="{{ related_article.image | image_url: width: 100, height: 100, crop: 'center' }}" alt="{{ related_article.title }}" width="100" height="100">
+                {%- endif -%}
+                <div class="related-content">
+                  <h4><a href="{{ related_article.url }}">{{ related_article.title }}</a></h4>
+                  <span class="related-date">{{ related_article.published_at | date: '%d %b' }}</span>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Populära ämnen</h3>
+        <div class="popular-tags">
+          <a href="/blogs/news/tagged/kök" class="popular-tag">Kök</a>
+          <a href="/blogs/news/tagged/sovrum" class="popular-tag">Sovrum</a>
+          <a href="/blogs/news/tagged/badrum" class="popular-tag">Badrum</a>
+          <a href="/blogs/news/tagged/trädgård" class="popular-tag">Trädgård</a>
+          <a href="/blogs/news/tagged/organisering" class="popular-tag">Organisering</a>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Prenumerera på nyheter</h3>
+        <p>Få våra senaste tips om förvaring och organisering.</p>
+        {% form 'customer', id: 'article-newsletter' %}
+          <input type="email" name="contact[email]" placeholder="Din e-postadress" required>
+          <button type="submit">Prenumerera</button>
+        {% endform %}
+      </div>
+    </aside>
+
+    <section class="comments-section">
+      <h2>Kommentarer ({{ article.comments_count }})</h2>
+
+      {%- if article.comments_enabled? -%}
+        <div class="comments-list">
+          {%- for comment in article.comments -%}
+            <div class="comment">
+              <div class="comment-header">
+                <strong class="comment-author">{{ comment.author }}</strong>
+                <span class="comment-date">{{ comment.created_at | date: '%d %B %Y kl %H:%M' }}</span>
+              </div>
+              <div class="comment-content">
+                {{ comment.content }}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="comment-form">
+          <h3>Lämna en kommentar</h3>
+          {% form 'new_comment', article %}
+            <div class="form-group">
+              <label for="comment_author">Namn *</label>
+              <input type="text" name="comment[author]" id="comment_author" required>
+            </div>
+            <div class="form-group">
+              <label for="comment_email">E-post *</label>
+              <input type="email" name="comment[email]" id="comment_email" required>
+            </div>
+            <div class="form-group">
+              <label for="comment_body">Kommentar *</label>
+              <textarea name="comment[body]" id="comment_body" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="submit-comment">Skicka kommentar</button>
+          {% endform %}
+        </div>
+      {%- else -%}
+        <p>Kommentarer är avstängda för denna artikel.</p>
+      {%- endif -%}
+    </section>
+  </div>
+</div>
+
+<style>
+.article-page {
+  padding: 2rem 0;
+}
+
+.blog-article {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 3rem;
+}
+
+.article-header {
+  padding: 3rem 3rem 2rem;
+  text-align: center;
+}
+
+.article-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  line-height: 1.2;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+.article-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.article-content {
+  padding: 0 3rem 3rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.article-content h2, .article-content h3, .article-content h4 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+}
+
+.article-content ul, .article-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.article-footer {
+  padding: 3rem;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+.article-tags h3, .article-share h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: {{ settings.color_primary }};
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.tag:hover {
+  background-color: #45a049;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.share-btn.facebook {
+  background-color: #1877f2;
+  color: white;
+}
+
+.share-btn.facebook:hover {
+  background-color: #166fe5;
+}
+
+.share-btn.twitter {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.share-btn.twitter:hover {
+  background-color: #1a91da;
+}
+
+.share-btn.email {
+  background-color: #666;
+  color: white;
+}
+
+.share-btn.email:hover {
+  background-color: #555;
+}
+
+.article-sidebar {
+  margin-bottom: 3rem;
+}
+
+.sidebar-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.sidebar-section h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.related-articles {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.related-article {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.related-article:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.related-article img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.related-content h4 {
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.related-content h4 a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.related-content h4 a:hover {
+  color: {{ settings.color_primary }};
+}
+
+.related-date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.popular-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.popular-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  color: #333;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.popular-tag:hover {
+  background-color: {{ settings.color_primary }};
+  color: white;
+}
+
+.comments-section {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.comments-section h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.comments-list {
+  margin-bottom: 3rem;
+}
+
+.comment {
+  padding: 1.5rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.comment-header {
+  margin-bottom: 1rem;
+}
+
+.comment-author {
+  color: {{ settings.color_primary }};
+  margin-right: 1rem;
+}
+
+.comment-date {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.comment-form h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submit-comment {
+  background-color: {{ settings.color_primary }};
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.submit-comment:hover {
+  background-color: #45a049;
+}
+
+@media (max-width: 768px) {
+  .article-header, .article-content, .article-footer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .article-header h1 {
+    font-size: 2rem;
+  }
+
+  .article-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .share-buttons {
+    flex-direction: column;
+  }
+
+  .comments-section {
+    padding: 2rem;
+  }
+}
+</style>

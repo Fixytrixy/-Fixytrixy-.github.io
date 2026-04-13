@@ -1,0 +1,83 @@
+<div class="trust-bar sa">
+  <div class="container">
+    <div class="trust-pills">
+      {%- for i in (1..4) -%}
+        {%- liquid
+          assign icon_key  = 'trust_' | append: i | append: '_icon'
+          assign label_key = 'trust_' | append: i | append: '_label'
+          assign icon  = section.settings[icon_key]
+          assign label = section.settings[label_key]
+        -%}
+        {%- if label != blank -%}
+          <div class="trust-pill sa sa-d{{ i }}">
+            {%- if icon != blank -%}<span class="trust-pill__icon">{{ icon }}</span>{%- endif -%}
+            <span class="trust-pill__label">{{ label }}</span>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Trustbar",
+  "tag": "section",
+  "class": "section-trust-bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "trust_1_icon",
+      "label": "Ikon 1",
+      "default": "🚚"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_label",
+      "label": "Text 1",
+      "default": "Fri frakt över 499 kr"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_icon",
+      "label": "Ikon 2",
+      "default": "🔄"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_label",
+      "label": "Text 2",
+      "default": "30 dagars öppet köp"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_icon",
+      "label": "Ikon 3",
+      "default": "🔒"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_label",
+      "label": "Text 3",
+      "default": "Säker betalning"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_icon",
+      "label": "Ikon 4",
+      "default": "⭐"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_label",
+      "label": "Text 4",
+      "default": "4.8/5 i kundbetyg"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trustbar"
+    }
+  ]
+}
+{% endschema %}

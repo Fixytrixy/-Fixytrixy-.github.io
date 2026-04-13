@@ -1,0 +1,46 @@
+<article class="product-card sa">
+  <a href="{{ product.url }}" class="product-card__image-link">
+    {%- if product.featured_image != blank -%}
+      <img
+        src="{{ product.featured_image | image_url: width: 400, height: 300, crop: 'center' }}"
+        data-src="{{ product.featured_image | image_url: width: 400, height: 300, crop: 'center' }}"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        width="400"
+        height="300"
+        loading="lazy"
+      >
+    {%- else -%}
+      <div class="product-card__no-image">{{ product.title }}</div>
+    {%- endif -%}
+    {%- if product.compare_at_price > product.price -%}
+      <span class="product-card__badge">Rea</span>
+    {%- endif -%}
+  </a>
+  <div class="product-card__info">
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    <div class="product-card__rating">
+      {%- assign card_rating = product.metafields.reviews.rating.value | default: 0 -%}
+      {%- if card_rating > 0 -%}
+        {%- assign card_rating_floor = card_rating | floor -%}
+        <div class="stars" aria-label="{{ card_rating }} av 5 stjärnor">
+          {%- for i in (1..5) -%}
+            {%- if i <= card_rating_floor -%}
+              <span class="star filled" aria-hidden="true">★</span>
+            {%- else -%}
+              <span class="star" aria-hidden="true">☆</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="product-card__price">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="product-card__price--compare">{{ product.compare_at_price | money }}</span>
+      {%- endif -%}
+      <span class="product-card__price--current">{{ product.price | money }}</span>
+    </div>
+    <a href="{{ product.url }}" class="btn btn--primary product-card__cta">Se produkt</a>
+  </div>
+</article>

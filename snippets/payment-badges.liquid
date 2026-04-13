@@ -1,0 +1,159 @@
+<div class="payment-methods">
+  <h3>Betalningsmetoder vi accepterar</h3>
+  
+  <div class="payment-badges">
+    {%- if settings.accept_klarna -%}
+      <div class="payment-badge klarna">
+        <svg viewBox="0 0 200 60" width="100" height="30" xmlns="http://www.w3.org/2000/svg">
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
+                font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#110F0E">
+            Klarna
+          </text>
+        </svg>
+        <p>Betala senare med Klarna</p>
+      </div>
+    {%- else -%}
+      <div class="payment-badge klarna">
+        <div class="badge-text">Klarna</div>
+        <p>Betala senare</p>
+      </div>
+    {%- endif -%}
+
+    {%- if settings.accept_swish -%}
+      <div class="payment-badge swish">
+        <svg viewBox="0 0 200 60" width="100" height="30" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="30" r="20" fill="#1B1B1B"/>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
+                font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+            Swish
+          </text>
+        </svg>
+        <p>Instant betalning med Swish</p>
+      </div>
+    {%- else -%}
+      <div class="payment-badge swish">
+        <div class="badge-text">Swish</div>
+        <p>Instant betalning</p>
+      </div>
+    {%- endif -%}
+
+    <div class="payment-badge card">
+      <svg viewBox="0 0 200 60" width="100" height="30" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="15" width="160" height="30" rx="5" fill="none" stroke="#FF6B35" stroke-width="2"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
+              font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FF6B35">
+          Kort
+        </text>
+      </svg>
+      <p>Kredit- och betalkort</p>
+    </div>
+  </div>
+
+  <div class="payment-info">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+    <p>Din betalning är säker och krypterad</p>
+  </div>
+</div>
+
+<style>
+.payment-methods {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-methods h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary, #B3AFA0);
+  margin-bottom: 1.5rem;
+}
+
+.payment-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(255, 107, 53, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.payment-badge:hover {
+  background: rgba(255, 107, 53, 0.1);
+  border-color: rgba(255, 107, 53, 0.4);
+}
+
+.payment-badge svg {
+  width: 60px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.badge-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-dark, #F0EDE8);
+}
+
+.payment-badge p {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #B3AFA0);
+  margin: 0;
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #B3AFA0);
+  padding: 1rem;
+  background: rgba(255, 107, 53, 0.03);
+  border-radius: 6px;
+}
+
+.payment-info svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--orange-primary, #FF6B35);
+}
+
+.payment-info p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .payment-badges {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .payment-badge {
+    padding: 0.75rem;
+  }
+
+  .payment-badge svg {
+    width: 50px;
+  }
+}
+</style>

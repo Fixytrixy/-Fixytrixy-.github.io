@@ -1,0 +1,93 @@
+<section class="quiz-section" id="quiz-section">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-header sa">
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p>{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div id="quiz-container" class="sa scale-in">
+
+      <!-- Progress bar -->
+      <div class="quiz__progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+        <div id="quiz-progress-fill" style="width:33%"></div>
+        <span id="quiz-progress-text">Steg 1 av 3</span>
+      </div>
+
+      <!-- Step 1: Room -->
+      <section class="quiz__step quiz__step--active" id="quiz-step-1" aria-labelledby="step-1-title">
+        <h2 id="step-1-title" tabindex="-1">Vilket rum ska vi fixa?</h2>
+        <div class="quiz__options">
+          <button class="quiz__option" data-value="kok"        data-next="2">🍳 Kök</button>
+          <button class="quiz__option" data-value="sovrum"     data-next="2">🛏 Sovrum</button>
+          <button class="quiz__option" data-value="badrum"     data-next="2">🚿 Badrum</button>
+          <button class="quiz__option" data-value="tradgard"   data-next="2">🌿 Trädgård</button>
+          <button class="quiz__option" data-value="hall"       data-next="2">🚪 Hall</button>
+          <button class="quiz__option" data-value="kontor"     data-next="2">💼 Kontor</button>
+        </div>
+      </section>
+
+      <!-- Step 2: Problem -->
+      <section class="quiz__step" id="quiz-step-2" aria-labelledby="step-2-title">
+        <h2 id="step-2-title" tabindex="-1">Vad är ditt största problem?</h2>
+        <button class="quiz__back" data-back="1">← Tillbaka</button>
+        <div class="quiz__options">
+          <button class="quiz__option" data-value="kaos"  data-next="3">🌀 Kaos &amp; röra</button>
+          <button class="quiz__option" data-value="plats" data-next="3">📦 Brist på plats</button>
+        </div>
+      </section>
+
+      <!-- Step 3: Budget -->
+      <section class="quiz__step" id="quiz-step-3" aria-labelledby="step-3-title">
+        <h2 id="step-3-title" tabindex="-1">Vad är din budget?</h2>
+        <button class="quiz__back" data-back="2">← Tillbaka</button>
+        <div class="quiz__options--list">
+          <button class="quiz__option" data-value="low"    data-next="result">💸 Under 299 kr</button>
+          <button class="quiz__option" data-value="medium" data-next="result">💳 299 – 799 kr</button>
+          <button class="quiz__option" data-value="high"   data-next="result">💎 Över 799 kr</button>
+        </div>
+      </section>
+
+      <!-- Result -->
+      <section class="quiz__step" id="quiz-step-result" aria-labelledby="quiz-result-heading">
+        <h2 id="quiz-result-heading" tabindex="-1">Ditt resultat</h2>
+        <p id="quiz-result-text"></p>
+        <a id="quiz-result-cta" href="#" class="btn btn--primary">Visa produkter</a>
+        <button id="quiz-restart" class="btn btn--secondary">Starta om quizet</button>
+      </section>
+
+    </div><!-- /#quiz-container -->
+  </div>
+
+  <script src="{{ 'quiz.js' | asset_url }}" defer></script>
+</section>
+
+{% schema %}
+{
+  "name": "Produktquiz",
+  "tag": "section",
+  "class": "section-quiz",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Rubrik",
+      "default": "Vilket rum ska vi fixa?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Underrubrik",
+      "default": "Svara på 3 frågor och vi matchar dig med rätt produkter"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produktquiz"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,110 @@
+{%- comment -%}
+  urgency-badge.liquid
+  Renders a low-stock urgency indicator on product pages.
+  Shows a message like "⚡ Bara 3 kvar i lager!" when inventory is low,
+  and a visual stock-level bar.
+
+  Usage: {% render 'urgency-badge', variant: product.selected_variant %}
+
+  Requires the variant to have inventory_management set to 'shopify' for
+  reliable inventory_quantity data. The threshold can be adjusted below.
+{%- endcomment -%}
+
+{%- liquid
+  assign inventory_qty   = variant.inventory_quantity | default: 0
+  assign low_stock_limit = 5
+  assign show_badge      = false
+  if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny'
+    if inventory_qty > 0 and inventory_qty <= low_stock_limit
+      assign show_badge = true
+    endif
+  endif
+-%}
+
+{%- if show_badge -%}
+  <div
+    class="urgency-badge{% if inventory_qty <= 2 %} urgency-badge--critical{% endif %}"
+    role="status"
+    aria-live="polite"
+    data-inventory="{{ inventory_qty }}"
+  >
+    <span class="urgency-badge__icon" aria-hidden="true">⚡</span>
+    <span class="urgency-badge__text">
+      {%- if inventory_qty == 1 -%}
+        Bara <strong>1</strong> kvar i lager!
+      {%- else -%}
+        Bara <strong>{{ inventory_qty }}</strong> kvar i lager!
+      {%- endif -%}
+    </span>
+    <div
+      class="urgency-badge__bar"
+      role="progressbar"
+      aria-valuenow="{{ inventory_qty }}"
+      aria-valuemin="0"
+      aria-valuemax="{{ low_stock_limit }}"
+      aria-label="{{ inventory_qty }} av {{ low_stock_limit }} kvar"
+    >
+      <div
+        class="urgency-badge__bar-fill"
+        style="width: {{ inventory_qty | times: 100 | divided_by: low_stock_limit }}%"
+      ></div>
+    </div>
+  </div>
+{%- endif -%}
+
+<style>
+/* ── Urgency badge ──────────────────────────────────────── */
+.urgency-badge {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  background: #fff8f5;
+  border: 1px solid #ffcbb8;
+  border-radius: 6px;
+  padding: 0.6rem 0.875rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #c94b00;
+}
+
+.urgency-badge--critical {
+  border-color: #e74c3c;
+  background: #fff5f5;
+  color: #c0392b;
+  animation: urgency-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes urgency-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+}
+
+.urgency-badge__icon {
+  font-size: 1rem;
+}
+
+.urgency-badge__text strong {
+  font-weight: 700;
+}
+
+.urgency-badge__bar {
+  width: 100%;
+  height: 4px;
+  background: #fde8de;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.urgency-badge__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF6B35, #e55a2b);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.urgency-badge--critical .urgency-badge__bar-fill {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+</style>
