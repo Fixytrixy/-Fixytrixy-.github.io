@@ -3,6 +3,14 @@
    Dark, editorial, confident. Like a luxury organiser brand.
    ============================================================ */
 :root {
+  /* ── Brand palette ──────────────────────────────────────── */
+  --color-terracotta: {{ settings.color_terracotta | default: '#C4704F' }};
+  --color-sage: {{ settings.color_sage | default: '#7A9E7E' }};
+  --color-sand: {{ settings.color_sand | default: '#F5EFE6' }};
+  --color-primary: {{ settings.color_primary | default: '#C4704F' }};
+  --color-terracotta-shadow: rgba(196, 112, 79, 0.18); /* 18 % terracotta for box-shadows */
+
+  /* ── Dark theme tokens (kept for backward-compat) ────────── */
   --bg: #0E0E0E;
   --bg2: #161616;
   --bg3: #1E1E1E;
@@ -1765,4 +1773,115 @@ footer nav a:hover {
         flex-direction: column;
         gap: 1rem;
     }
+}
+/* ============================================================
+   CATEGORY GRID SECTION
+   ============================================================ */
+.section-category-grid {
+  padding: 4rem 0;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--text, #212121);
+  border-radius: var(--radius, 16px);
+  overflow: hidden;
+  background: var(--color-sand, #F5EFE6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--color-terracotta-shadow);
+}
+
+.category-card__image {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--color-sand, #F5EFE6);
+}
+
+.category-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.category-card:hover .category-card__image img {
+  transform: scale(1.05);
+}
+
+.category-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-sand, #F5EFE6), #edddd0);
+}
+
+.category-card__icon {
+  font-size: 3rem;
+}
+
+.category-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, transparent 60%);
+}
+
+.category-card__info {
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.category-card__info h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #212121;
+  margin: 0;
+}
+
+.category-card__info p {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0;
+}
+
+.category-card__count {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.category-card__cta {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-terracotta, #C4704F);
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
 }
