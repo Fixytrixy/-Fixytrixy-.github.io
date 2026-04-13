@@ -6,9 +6,9 @@
     "test": "jest --coverage",
     "import": "node scripts/amazon-product-importer.js",
     "report": "node scripts/generate-sales-report.js",
-    "dev": "shopify theme dev --store=xivfqd-hz.myshopify.com",
-    "push": "shopify theme push --store=xivfqd-hz.myshopify.com",
-    "pull": "shopify theme pull --store=xivfqd-hz.myshopify.com"
+    "dev": "shopify theme dev --store=fixaotrixa.myshopify.com",
+    "push": "shopify theme push --store=fixaotrixa.myshopify.com",
+    "pull": "shopify theme pull --store=fixaotrixa.myshopify.com"
   },
   "keywords": [
     "shopify",
