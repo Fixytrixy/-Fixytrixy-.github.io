@@ -126,7 +126,7 @@
           {%- if related_product != product -%}
             <div class="product-card">
               <a href="{{ related_product.url }}">
-                <img src="{{ related_product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ related_product.title | escape }}" width="300" height="300">
+                <img src="{{ related_product.featured_image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ related_product.title | escape }}" width="300" height="300" loading="lazy">
               </a>
               <h4><a href="{{ related_product.url }}">{{ related_product.title }}</a></h4>
               <span class="price">{{ related_product.price | money }}</span>

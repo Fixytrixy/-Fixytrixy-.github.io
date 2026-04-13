@@ -28,7 +28,7 @@
           <h3>🎉 Köp 3, betala för 2</h3>
           <p>Lägg till fler produkter i din kundvagn och spara! Rabatten tillämpas automatiskt i kassan.</p>
           {%- if cart.item_count < 3 -%}
-            <p class="bundle-offer__progress">Du har {{ cart.item_count }} {{ cart.item_count | pluralize: 'produkt', 'produkter' }} — lägg till {{ 3 | minus: cart.item_count }} till!</p>
+            <p class="bundle-offer__progress">Du har {{ cart.item_count }} {% if cart.item_count == 1 %}produkt{% else %}produkter{% endif %} — lägg till {{ 3 | minus: cart.item_count }} till!</p>
           {%- else -%}
             <p class="bundle-offer__achieved">✓ Du kvalificerar dig för paketerbjudandet!</p>
           {%- endif -%}
