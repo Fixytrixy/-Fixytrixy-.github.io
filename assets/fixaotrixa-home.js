@@ -326,6 +326,73 @@
   }
 
   /* ══════════════════════════════════════════════
+     8. Room filter (collection pages)
+  ══════════════════════════════════════════════ */
+  function initRoomFilter() {
+    var filterEl = document.getElementById('room-filter');
+    if (!filterEl) return;
+
+    var grid      = document.getElementById('products-grid');
+    var noResults = document.getElementById('room-filter-no-results');
+    var buttons   = filterEl.querySelectorAll('.room-filter-btn');
+
+    /* Read initial room from URL param ?tag=room-xxx */
+    var params     = new URLSearchParams(window.location.search);
+    var activeRoom = params.get('tag') || '';
+
+    function applyFilter(room) {
+      activeRoom = room;
+
+      /* Update aria-pressed state */
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].setAttribute('aria-pressed', buttons[i].dataset.room === room ? 'true' : 'false');
+      }
+
+      /* Show / hide product cards */
+      var visibleCount = 0;
+      if (grid) {
+        var cards = grid.querySelectorAll('.product-card');
+        for (var j = 0; j < cards.length; j++) {
+          var card = cards[j];
+          var tags = card.dataset.tags || '';
+          var visible = !room || (tags !== '' && tags.split(',').some(function (t) {
+            return t.trim() === room;
+          }));
+          card.style.display = visible ? '' : 'none';
+          if (visible) visibleCount++;
+        }
+      }
+
+      /* No-results message */
+      if (noResults) {
+        noResults.style.display = (visibleCount === 0 && room !== '') ? 'block' : 'none';
+      }
+
+      /* Sync URL without page reload */
+      var newParams = new URLSearchParams(window.location.search);
+      if (room) {
+        newParams.set('tag', room);
+      } else {
+        newParams.delete('tag');
+      }
+      var newUrl = window.location.pathname + (newParams.toString() ? '?' + newParams.toString() : '');
+      history.replaceState(null, '', newUrl);
+    }
+
+    /* Apply on load */
+    applyFilter(activeRoom);
+
+    /* Attach click handlers */
+    (function () {
+      for (var k = 0; k < buttons.length; k++) {
+        (function (btn) {
+          btn.addEventListener('click', function () { applyFilter(btn.dataset.room); });
+        }(buttons[k]));
+      }
+    }());
+  }
+
+  /* ══════════════════════════════════════════════
      Boot
   ══════════════════════════════════════════════ */
   function boot() {
@@ -335,6 +402,7 @@
     initSmoothScroll();
     initVariantSelector();
     initLazyImages();
+    initRoomFilter();
     fireViewItem();
   }
 
